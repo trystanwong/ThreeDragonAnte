@@ -22,6 +22,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import java.util.ArrayList;
 
 import com.example.threeDragonAnte.R;
@@ -59,7 +61,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private Button choice1;
     private Button choice2;
     private Button choice3;
-    private TextView numMoves;
 
     //card lists
     private ImageView[] hand;
@@ -70,7 +71,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
 
     //zoomed card
-    ViewGroup zoomed;
+    private ConstraintLayout zoomed;
     private ImageView selected;
     private TextView strength1;
     private TextView strength2;
@@ -320,9 +321,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 strength2.setText(Integer.toString(hand.getStrength()));
                 strength1.setText(Integer.toString(hand.getStrength()));
 
-                selected.setVisibility(View.VISIBLE);
-                strength1.setVisibility(View.VISIBLE);
-                strength2.setVisibility(View.VISIBLE);
+                zoomed.setVisibility(View.VISIBLE);
 
                 //moving the ImageView of each card in the hand
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
@@ -338,15 +337,16 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
                     case MotionEvent.ACTION_UP:
 
-                        //make the large card invisible
-                        selected.setVisibility(View.INVISIBLE);
-                        strength1.setVisibility(View.INVISIBLE);
-                        strength2.setVisibility(View.INVISIBLE);
+                        zoomed.setVisibility(View.INVISIBLE);
+
+                        view.setRotationX(-26);
 
                         RelativeLayout.LayoutParams played = (RelativeLayout.LayoutParams) view
                                 .getLayoutParams();
 
                         float d = myActivity.getResources().getDisplayMetrics().density;
+
+
 
                         //cards are placed based on what game phase it is
                         if(tda.getCurrentPlayer()==playerNum) {
@@ -371,8 +371,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                             }
                         }
 
-
-
                         //returning view back to original spot after its played
                         int dpValue = leftMargins[i]; // margin in dips
                         int margin = (int)(dpValue * d);
@@ -383,14 +381,36 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         view.setLayoutParams(played);
                         break;
 
+                        //moving the card with finger
                     case MotionEvent.ACTION_MOVE:
-                            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
+
+
+                        //setting the rotation of the card to zero as it moves
+                        view.setRotationX(0);
+
+                        //margins of the card
+                        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
                                     .getLayoutParams();
-                            layoutParams.leftMargin = x - xDelta;
-                            layoutParams.bottomMargin = yDelta - y;
-                            layoutParams.rightMargin = 0;
-                            layoutParams.topMargin = 0;
-                            view.setLayoutParams(layoutParams);
+
+                        //margins of the zoomed card
+                        RelativeLayout.LayoutParams zoomParam = (RelativeLayout.LayoutParams) zoomed
+                                .getLayoutParams();
+
+                        zoomParam.leftMargin= layoutParams.leftMargin;
+                        zoomed.setLayoutParams(zoomParam);
+
+                        //accounting for display pixels
+                        float z = myActivity.getResources().getDisplayMetrics().density;
+
+                        //the zoomed card becomes invisible when the card is moving
+                        if (layoutParams.bottomMargin > (int) (z * 50)) {
+                            zoomed.setVisibility(View.INVISIBLE);
+                        }
+                        layoutParams.leftMargin = x - xDelta;
+                        layoutParams.bottomMargin = yDelta - y;
+                        layoutParams.rightMargin = 0;
+                        layoutParams.topMargin = 0;
+                        view.setLayoutParams(layoutParams);
                         break;
                 }
             }
@@ -441,8 +461,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         choices[1] = choice2;
         choices[2] = choice3;
 
-
-
         //text on the board
         gameText = activity.findViewById(R.id.gameText);
         stakes = activity.findViewById(R.id.stakesAmount);
@@ -459,6 +477,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
         //zoomed card
         selected = activity.findViewById(R.id.zoom);
+        zoomed = activity.findViewById(R.id.zoomlayout);
         selected.setOnTouchListener(this);
         strength1 = activity.findViewById(R.id.strength);
         strength2 = activity.findViewById(R.id.strength2);
