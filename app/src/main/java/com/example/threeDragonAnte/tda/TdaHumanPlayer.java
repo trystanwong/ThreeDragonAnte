@@ -134,7 +134,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         choice3.setText(tda.getChoice3());
 
                         // if the dragon slayer was played
-                        if(tda.getLast()[playerNum].getName().equals("The DragonSlayer")){
+                        if(tda.isChoosing()){
                             //shows all available choices to remove
                             for(int i = 0; i < tda.getChooseFrom(); i++){
                                 choices[i].setText(tda.getChoice(i));
@@ -142,10 +142,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                             }
                             break;
                         }
-                        else {
-                            choice1.setVisibility(View.VISIBLE);
-                            choice2.setVisibility(View.VISIBLE);
-                        }
+                        choice1.setVisibility(View.VISIBLE);
+                        choice2.setVisibility(View.VISIBLE);
                         break;
                     }
                     choice1.setVisibility(View.GONE);

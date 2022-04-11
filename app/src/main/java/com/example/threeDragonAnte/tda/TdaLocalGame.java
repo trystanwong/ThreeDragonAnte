@@ -19,43 +19,6 @@ public class TdaLocalGame extends LocalGame{
 
     }
 
-    /**
-     * decides the winner of an ante and who will be leading the road
-     * @return
-     */
-    public int roundLeader(){
-        //if its currently an Ante
-        if(tda.getPhase() == TdaGameState.ANTE){
-            //decides who's ante was stronger
-            ArrayList<Card> ante = tda.getAnte();
-            //defaulted to first ante card as the strongest
-            int strongest = ante.get(0).getStrength();
-            if(ante.get(1).getStrength()>strongest){
-                strongest = ante.get(1).getStrength();
-                //players pay to the stakes
-                tda.setHoard(0,-strongest);
-                tda.setHoard(1,-strongest);
-                tda.setStakes(2*strongest);
-                return 1;
-            }
-            //players pay to the stakes
-            tda.setHoard(0,-strongest);
-            tda.setHoard(1,-strongest);
-            tda.setStakes(2*strongest);
-
-        }
-        else{
-            //deciding who won the round by looking at the strength of each players flight card
-            Card player0 = tda.getLast()[0];
-            Card player1 = tda.getLast()[1];
-            if(player0.getStrength()>player1.getStrength()){
-                return 0;
-            }
-            return 1;
-        }
-        return 0;
-    }
-
     @Override
     protected void sendUpdatedStateTo(GamePlayer p) {
         //current game state
@@ -110,6 +73,7 @@ public class TdaLocalGame extends LocalGame{
                         Card discarded = hand.get(index);
                         tda.getHands()[opponent].add(discarded);
                         hand.remove(index);
+                        tda.setDiscarding(false);
                         tda.setPhase(TdaGameState.ROUND);
                     }
                     break;
@@ -122,7 +86,11 @@ public class TdaLocalGame extends LocalGame{
                         tda.getHands()[opponent].add(discarded);
                         hand.remove(index);
                         tda.setDiscarding(false);
+                        tda.setPhase(TdaGameState.ROUND);
                     }
+            }
+            if(tda.getFlights()[player].size()==0){
+                return true;
             }
             return turnHelper();
         }
@@ -152,7 +120,7 @@ public class TdaLocalGame extends LocalGame{
         //a player is making a choice
         else if(action instanceof ChoiceAction){
             int choice = ((ChoiceAction) action).getChoiceNum();
-
+            //if the opponent gave you a choice
             switch(tda.getLast()[opponent].getName()){
                 case "Green Dragon":
                     if(choice == 0){
@@ -169,12 +137,11 @@ public class TdaLocalGame extends LocalGame{
                                     " a strength less than "
                                     + tda.getLast()[opponent].getStrength());
                             tda.setPhase(TdaGameState.DISCARD);
-                            return true;
                         }
                         else {
                             tda.setGameText("No weaker dragons to give");
-                            return true;
                         }
+                        return true;
                     }
                     //paying 5 gold to the opponent
                     else if(choice == 1){
@@ -185,39 +152,53 @@ public class TdaLocalGame extends LocalGame{
                     }
             }
 
-            switch(tda.getLast()[player].getName()){
-                case "The DragonSlayer":
+            //if you played a card that gave you a choice
+            if(tda.isChoosing()) {
+                switch (tda.getLast()[player].getName()) {
 
-                    //pay one to the stakes
-                    tda.setHoard(player,-1);
+                    case "Dracolich":
 
-                    //removing the card from opponent flight
-                    Card removed = tda.getFlights()[opponent].get(choice);
-                    removed.setPlacement(Card.DISCARD);
-                    tda.getDiscard().add(removed);
-                    tda.getFlights()[opponent].remove(choice);
+                        //power is copied
+                        powers(tda.getFlights()[opponent].get(choice));
+                        tda.setPhase(TdaGameState.ROUND);
+                        tda.setChooseFrom(0);
 
-                    //returning back to the round
-                    tda.setPhase(TdaGameState.ROUND);
-                    tda.setChooseFrom(0);
-                    break;
-                case "Blue Dragon":
-                    int numEvil = 0;
-                    for(Card check : tda.getFlights()[player]){
-                        if(check.getType()==Card.EVIL){
-                            numEvil++;
+
+                    case "The DragonSlayer":
+                        //pay one to the stakes
+                        tda.setHoard(player, -1);
+
+                        //removing the card from opponent flight
+                        Card removed = tda.getFlights()[opponent].get(choice);
+                        removed.setPlacement(Card.DISCARD);
+                        tda.getDiscard().add(removed);
+                        tda.getFlights()[opponent].remove(choice);
+
+                        //returning back to the round
+                        tda.setDiscarding(true);
+                        tda.setPhase(TdaGameState.ROUND);
+                        tda.setChooseFrom(0);
+                        break;
+                    case "Blue Dragon":
+                        int numEvil = 0;
+                        for (Card check : tda.getFlights()[player]) {
+                            if (check.getType() == Card.EVIL) {
+                                numEvil++;
+                            }
                         }
-                    }
-                    if(choice == 0){
-                        tda.setHoard(player,numEvil);
-                        tda.setPhase(TdaGameState.ROUND);
-                    }
-                    if(choice == 1){
-                        tda.setStakes(stakes+numEvil);
-                        tda.setHoard(opponent,-numEvil);
-                        tda.setPhase(TdaGameState.ROUND);
-                    }
-                    break;
+                        if (choice == 0) {
+                            tda.setHoard(player, numEvil);
+                            tda.setPhase(TdaGameState.ROUND);
+                        }
+                        if (choice == 1) {
+                            tda.setStakes(stakes + numEvil);
+                            tda.setHoard(opponent, -numEvil);
+                            tda.setPhase(TdaGameState.ROUND);
+                        }
+                        tda.setChooseFrom(0);
+                        break;
+                }
+                tda.setChoosing(false);
             }
                 return turnHelper();
         }
@@ -271,6 +252,27 @@ public class TdaLocalGame extends LocalGame{
 
                 //cards that have choices
                 switch(flight.getName()){
+                    case "Dracolich":
+                        tda.setGameText("Choose a card to copy its power:");
+                        //looking through the opponents flight to see what cards you can copy
+                        ArrayList<Card> oppFlight = tda.getFlights()[opponent];
+                        for(int i = 0; i < oppFlight.size();i++){
+                            Card d = oppFlight.get(i);
+                            //only discards cards that are dragons
+                            // and weaker than the dragon slayer
+                            if(d.getType()==Card.EVIL){
+                                tda.addChooseFrom();
+                                tda.setChoices(i,(i+1)+". "+oppFlight.get(i).toString());
+                            }
+                        }
+                        if(tda.getChooseFrom()==0){
+                            break;
+                        }
+                        else {
+                            tda.setPhase(TdaGameState.CHOICE);
+                            tda.setChoosing(true);
+                            return true;
+                        }
                     case "The DragonSlayer":
                         tda.setGameText("Choose a card to discard from opponent's flight:");
 
@@ -290,6 +292,7 @@ public class TdaLocalGame extends LocalGame{
                         }
                         else {
                             tda.setPhase(TdaGameState.CHOICE);
+                            tda.setChoosing(true);
                             return true;
                         }
                     case "Blue Dragon":
@@ -301,16 +304,19 @@ public class TdaLocalGame extends LocalGame{
                                 numEvil++;
                             }
                         }
+                        tda.setChooseFrom(2);
                         tda.setGameText("Choose one:");
                         tda.setChoice1("Steal "+numEvil+" gold from the stakes.");
                         tda.setChoice2("Opponent pays "+numEvil+" gold to the stakes.");
                         tda.setPhase(TdaGameState.CHOICE);
+                        tda.setChoosing(true);
                         return true;
                     case "Green Dragon":
                         tda.setGameText("Choose one:");
                         tda.setChoice1("Give a weaker dragon from your hand to your opponent.");
                         tda.setChoice2("Pay your opponent 5 gold.");
                         tda.setPhase(TdaGameState.CHOICE);
+                        tda.setDiscarding(true);
                         tda.setCurrentPlayer(opponent);
                         return true;
                 }
@@ -318,6 +324,51 @@ public class TdaLocalGame extends LocalGame{
             }
         }
         return false;
+    }
+
+    /**
+     * decides the winner of an ante and who will be leading the road
+     * @return the winner of the round
+     */
+    public int roundLeader(){
+        //if its currently an Ante
+        if(tda.getPhase() == TdaGameState.ANTE){
+            //decides who's ante was stronger
+            ArrayList<Card> ante = tda.getAnte();
+            //defaulted to first ante card as the strongest
+            int strongest = ante.get(0).getStrength();
+            if(ante.get(1).getStrength()>strongest){
+                strongest = ante.get(1).getStrength();
+                //players pay to the stakes
+                tda.setHoard(0,-strongest);
+                tda.setHoard(1,-strongest);
+                tda.setStakes(2*strongest);
+                return 1;
+            }
+            //players pay to the stakes
+            tda.setHoard(0,-strongest);
+            tda.setHoard(1,-strongest);
+            tda.setStakes(2*strongest);
+
+        }
+        else{
+            //deciding who won the round by looking at the strength of each players flight card
+            Card player0 = tda.getLast()[0];
+            Card player1 = tda.getLast()[1];
+
+            //if the priest was played that player automatically wins the round
+            for(int i =0; i < 2; i++){
+                if(tda.getLast()[i].getName().equals("The Priest")){
+                    return i;
+                }
+            }
+            //otherwise return the player with the strongest card played
+            if(player0.getStrength()>player1.getStrength()){
+                return 0;
+            }
+            return 1;
+        }
+        return 0;
     }
 
     /**
@@ -477,6 +528,10 @@ public class TdaLocalGame extends LocalGame{
             case "Black Dragon":
                 tda.setHoard(player,2);
                 tda.setStakes(stakes-2);
+                break;
+            case "The Priest":
+                tda.setHoard(player,-1);
+                tda.setStakes(stakes+1);
                 break;
         }
     }
