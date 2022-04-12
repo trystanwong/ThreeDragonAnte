@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import com.example.threeDragonAnte.R;
 import com.example.threeDragonAnte.game.GameHumanPlayer;
@@ -45,6 +46,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     //coordinates of moving cards
     private int xDelta;
     private int yDelta;
+    private int[][][]dimensions;
     private int[] leftMargins;
     private int[] bottomMargins;
     private int[] rotations;
@@ -88,9 +90,15 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
         //all the margins to keep track of for the cards in the players hand
         //used to move the card ImageView back to their original position
+        dimensions = new int[10][10][3];
         leftMargins = new int[10];
         bottomMargins = new int[10];
         rotations = new int[10];
+
+        dimensions[0][0][0] = 360;
+        dimensions[0][0][1] = 60;
+        dimensions[0][0][2] = 0;
+
 
         leftMargins[0] = 330;
         bottomMargins[0] = 60;
@@ -237,16 +245,165 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 hand[i].setVisibility(View.GONE);
             }
 
-            //orientation of the cards depended on the size of the hand
-            switch(currentHand.size()){
-                case 1:
-                    RelativeLayout.LayoutParams hand0 = (RelativeLayout.LayoutParams) hand[0]
-                            .getLayoutParams();
-                    hand0.leftMargin = 400;
+            float d = myActivity.getResources().getDisplayMetrics().density;
 
-                    hand[0].setRotationX(0);
+            RelativeLayout.LayoutParams[] params = new RelativeLayout.LayoutParams[10];
+
+            for(int i = 0; i<10;i++){
+                params[i] = (RelativeLayout.LayoutParams)hand[i].getLayoutParams();
 
             }
+
+            //orientation of the cards depended on the size of the hand
+            switch(currentHand.size()) {
+                case 1:
+                    params[0].leftMargin = (int) (d * 360);
+                    leftMargins[0] = 360;
+                    params[0].bottomMargin = (int) (d * 60);
+                    bottomMargins[0] = 60;
+                    hand[0].setRotation(0);
+                    rotations[0] = 0;
+
+                    break;
+                case 2:
+                    for (int i = 0; i < 2; i++) {
+                        leftMargins[i] = (330 + (60 * i));
+                        bottomMargins[i] = 60;
+                        rotations[i] = (int)((Math.pow(-1.0, i + 1)) * 5);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin = (int) (d * bottomMargins[i]);
+                        hand[i].setRotation(rotations[i]);
+                    }
+                    break;
+                case 3:
+                case 5:
+                case 7:
+                case 9:
+                    int middle = currentHand.size()/2;
+                    leftMargins[middle]=360;
+                    bottomMargins[middle]=65;
+                    rotations[middle]=0;
+                    params[middle].leftMargin = (int) (d * leftMargins[middle]);
+                    params[middle].bottomMargin =  (int) (d *bottomMargins[middle]);
+                    hand[middle].setRotation(rotations[middle]);
+
+                    //right side of the middle card
+                    for(int i = (middle)+1; i<currentHand.size(); i++){
+                        leftMargins[i]=360+(60*(i-middle));
+                        bottomMargins[i]=60-(2*i*(i-middle-1));
+                        rotations[i]=7*(i-middle);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin =  (int) (d *bottomMargins[i]);
+                        hand[i].setRotation(rotations[i]);
+                    }
+                    for(int i = (middle)-1; i>=0; i--){
+                        leftMargins[i]=360-(60*(middle-i));
+                        bottomMargins[i]=bottomMargins[middle*2-i];
+                        rotations[i]=(7)*(i-middle);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin =  (int) (d *bottomMargins[i]);
+                        hand[i].setRotation(rotations[i]);
+                    }
+                    break;
+                case 4:
+                    for (int i = 0; i < 4; i++) {
+                        leftMargins[i] = 270 + (60 * i);
+                        if(i == 0 || i == 3){
+                            rotations[i] = ((int)(10*(Math.pow(-1.0, i+1))));
+                            hand[i].setRotation(rotations[i]);
+                            bottomMargins[i] = 54;
+                        }else {
+                            rotations[i] = ((int) (Math.pow(-1.0, i)) * 5);
+                            hand[i].setRotation(rotations[i]);
+                            bottomMargins[i]= 60;
+                        }
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin = (int)(d*bottomMargins[i]);
+                    }
+                    break;
+                case 6:
+                    for (int i = 0; i < 6; i++) {
+                        leftMargins[i] = 210 + (60 * i);
+                        if(i == 0 || i == 5) {
+                            rotations[i] = ((int) (15 * (Math.pow(-1.0, i+1))));
+                            hand[i].setRotation(rotations[i]);
+                            bottomMargins[i] = 40;
+                        }
+                        else if(i == 1 || i == 4){
+                            rotations[i] = ((int)(10*(Math.pow(-1.0, i))));
+                            hand[i].setRotation(rotations[i]);
+                            bottomMargins[i] = 54;
+                        }else {
+                            rotations[i] = ((int) (Math.pow(-1.0, i+1)) * 5);
+                            hand[i].setRotation(rotations[i]);
+                            bottomMargins[i]= 60;
+                        }
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin = (int)(d * bottomMargins[i]);
+                    }
+                    break;
+                case 8:
+                    for (int i = 0; i < 8; i++) {
+                        leftMargins[i] = 150 + (60 * i);
+                        if(i<4){
+                            rotations[i] = -20 + (5*i);
+                        }
+                        else{
+                            rotations[i] = 5 + (5*(i-4));
+                        }
+                        if(i == 0 || i == 7) {
+                            bottomMargins[i] = 24;
+                        }
+                        else if(i == 1 || i == 6){
+                            bottomMargins[i] = 40;
+                        }
+                        else if(i == 2 || i == 5) {
+                            bottomMargins[i] = 54;
+                        }
+                        else {
+                            bottomMargins[i]= 60;
+                        }
+                        hand[i].setRotation(rotations[i]);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin = (int)(d * bottomMargins[i]);
+                    }
+                    break;
+                case 10:
+                    for (int i = 0; i < 10; i++) {
+                        leftMargins[i] = 90 + (60 * i);
+                        if(i<5){
+                            rotations[i] = -25 + (5*i);
+                        }
+                        else{
+                            rotations[i] = 5 + (5*(i-5));
+                        }
+                        if(i == 0 || i == 9) {
+                            bottomMargins[i] = 2;
+                        }
+                        else if(i == 1 || i == 8){
+                            bottomMargins[i] = 24;
+                        }
+                        else if(i == 2 || i == 7) {
+                            bottomMargins[i] = 40;
+                        }
+                        else if(i == 3 || i == 6) {
+                            bottomMargins[i] = 54;
+                        }
+                        else {
+                            bottomMargins[i]= 60;
+                        }
+                        hand[i].setRotation(rotations[i]);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin = (int)(d * bottomMargins[i]);
+                    }
+                    break;
+            }
+
+            for(int i = 0; i<10; i++){
+                hand[i].setLayoutParams(params[i]);
+            }
+
+
 
             //all cards in each flight
             ArrayList<Card>[] currentFlights = tda.getFlights();

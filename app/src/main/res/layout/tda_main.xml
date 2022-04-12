@@ -518,49 +518,48 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
-            android:id="@+id/hand0_9"
+            android:id="@+id/hand0_0"
             android:layout_width="80dp"
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="136dp"
-            android:layout_marginBottom="9dp"
+            android:layout_marginLeft="360dp"
+            android:layout_marginBottom="71dp"
             android:background="@color/black"
             android:cropToPadding="false"
             android:padding="2dp"
-            android:rotation="-25"
+            android:rotation="-5"
+            android:rotationX="-26"
+            app:srcCompat="@drawable/blackdragon1" />
+
+        <ImageView
+            android:id="@+id/hand0_1"
+            android:layout_width="80dp"
+            android:layout_height="145dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="502dp"
+            android:layout_marginBottom="60dp"
+            android:background="@color/black"
+            android:cropToPadding="false"
+            android:padding="2dp"
+            android:rotation="5"
             android:rotationX="-26"
             android:visibility="visible"
             app:srcCompat="@drawable/blackdragon1" />
 
         <ImageView
-            android:id="@+id/hand0_7"
+            android:id="@+id/hand0_2"
             android:layout_width="80dp"
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="180dp"
-            android:layout_marginBottom="28dp"
+            android:layout_marginLeft="547dp"
+            android:layout_marginBottom="54dp"
             android:background="@color/black"
             android:cropToPadding="false"
             android:padding="2dp"
-            android:rotation="-20"
-            android:rotationX="-26"
-            android:visibility="visible"
-            app:srcCompat="@drawable/blackdragon1" />
-
-        <ImageView
-            android:id="@+id/hand0_5"
-            android:layout_width="80dp"
-            android:layout_height="145dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="225dp"
-            android:layout_marginBottom="43dp"
-            android:background="@color/black"
-            android:cropToPadding="false"
-            android:padding="2dp"
-            android:rotation="-15"
+            android:rotation="10"
             android:rotationX="-26"
             android:visibility="visible"
             app:srcCompat="@drawable/blackdragon1" />
@@ -582,59 +581,12 @@
             app:srcCompat="@drawable/blackdragon1" />
 
         <ImageView
-            android:id="@+id/hand0_0"
-            android:layout_width="80dp"
-            android:layout_height="145dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="330dp"
-            android:layout_marginBottom="60dp"
-            android:background="@color/black"
-            android:cropToPadding="false"
-            android:padding="2dp"
-            android:rotation="-5"
-            android:rotationX="-26"
-            app:srcCompat="@drawable/blackdragon1" />
-
-        <ImageView
-            android:id="@+id/hand0_1"
-            android:layout_width="80dp"
-            android:layout_height="145dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="390dp"
-            android:layout_marginBottom="60dp"
-            android:background="@color/black"
-            android:cropToPadding="false"
-            android:padding="2dp"
-            android:rotation="5"
-            android:rotationX="-26"
-            android:visibility="visible"
-            app:srcCompat="@drawable/blackdragon1" />
-
-        <ImageView
-            android:id="@+id/hand0_2"
-            android:layout_width="80dp"
-            android:layout_height="145dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="448dp"
-            android:layout_marginBottom="54dp"
-            android:background="@color/black"
-            android:cropToPadding="false"
-            android:padding="2dp"
-            android:rotation="10"
-            android:rotationX="-26"
-            android:visibility="visible"
-            app:srcCompat="@drawable/blackdragon1" />
-
-        <ImageView
             android:id="@+id/hand0_4"
             android:layout_width="80dp"
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="504dp"
+            android:layout_marginLeft="615dp"
             android:layout_marginBottom="43dp"
             android:background="@color/black"
             android:cropToPadding="false"
@@ -645,17 +597,49 @@
             app:srcCompat="@drawable/blackdragon1" />
 
         <ImageView
+            android:id="@+id/hand0_5"
+            android:layout_width="80dp"
+            android:layout_height="145dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="225dp"
+            android:layout_marginBottom="43dp"
+            android:background="@color/black"
+            android:cropToPadding="false"
+            android:padding="2dp"
+            android:rotation="-15"
+            android:rotationX="-26"
+            android:visibility="visible"
+            app:srcCompat="@drawable/blackdragon1" />
+
+        <ImageView
             android:id="@+id/hand0_6"
             android:layout_width="80dp"
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="558dp"
-            android:layout_marginBottom="28dp"
+            android:layout_marginLeft="690dp"
+            android:layout_marginBottom="29dp"
             android:background="@color/black"
             android:cropToPadding="false"
             android:padding="2dp"
             android:rotation="20"
+            android:rotationX="-26"
+            android:visibility="visible"
+            app:srcCompat="@drawable/blackdragon1" />
+
+        <ImageView
+            android:id="@+id/hand0_7"
+            android:layout_width="80dp"
+            android:layout_height="145dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="180dp"
+            android:layout_marginBottom="28dp"
+            android:background="@color/black"
+            android:cropToPadding="false"
+            android:padding="2dp"
+            android:rotation="-20"
             android:rotationX="-26"
             android:visibility="visible"
             app:srcCompat="@drawable/blackdragon1" />
@@ -666,12 +650,28 @@
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="610dp"
+            android:layout_marginLeft="822dp"
             android:layout_marginBottom="9dp"
             android:background="@color/black"
             android:cropToPadding="false"
             android:padding="2dp"
             android:rotation="25"
+            android:rotationX="-26"
+            android:visibility="visible"
+            app:srcCompat="@drawable/blackdragon1" />
+
+        <ImageView
+            android:id="@+id/hand0_9"
+            android:layout_width="80dp"
+            android:layout_height="145dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="136dp"
+            android:layout_marginBottom="9dp"
+            android:background="@color/black"
+            android:cropToPadding="false"
+            android:padding="2dp"
+            android:rotation="-25"
             android:rotationX="-26"
             android:visibility="visible"
             app:srcCompat="@drawable/blackdragon1" />

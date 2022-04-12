@@ -68,7 +68,7 @@ public class TdaGameState extends GameState {
             hands[i] = new ArrayList<>();
 
             //each player starts off with 6 cards
-            for(int j = 0; j<6; j++){
+            for(int j = 0; j<5; j++){
                 drawCard(i);
             }
             flights[i] = new ArrayList<>();
