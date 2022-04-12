@@ -533,6 +533,8 @@ public class TdaLocalGame extends LocalGame{
                 tda.setHoard(player,-1);
                 tda.setStakes(stakes+1);
                 break;
+            case "The Archmage":
+                break;
         }
     }
 }
