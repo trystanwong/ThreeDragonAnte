@@ -182,7 +182,7 @@ public class TdaGameState extends GameState {
         //23045 - red dragon
         //533440 - dracolich
         //334055 - tiamat
-        Random r = new Random(334055);
+        Random r = new Random(3459);
         int index = r.nextInt(deck.size());
         Card drawn = deck.get(index);
         deck.remove(index);

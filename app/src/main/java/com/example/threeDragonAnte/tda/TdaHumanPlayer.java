@@ -237,6 +237,17 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 hand[i].setVisibility(View.GONE);
             }
 
+            //orientation of the cards depended on the size of the hand
+            switch(currentHand.size()){
+                case 1:
+                    RelativeLayout.LayoutParams hand0 = (RelativeLayout.LayoutParams) hand[0]
+                            .getLayoutParams();
+                    hand0.leftMargin = 400;
+
+                    hand[0].setRotationX(0);
+
+            }
+
             //all cards in each flight
             ArrayList<Card>[] currentFlights = tda.getFlights();
             for(int i = 0; i < 2; i++) {

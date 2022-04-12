@@ -49,16 +49,19 @@ public class TdaComputerPlayer extends GameComputerPlayer {
 
                         //dumb A.I always takes option 1
                     case TdaGameState.CHOICE:
-                        super.game.sendAction(new ChoiceAction(this,1));
+                        super.game.sendAction(new ChoiceAction(this,0));
                         break;
                     case TdaGameState.DISCARD:
-
                         //dumb A.I chooses the first playable card to discard
+                        int index = 0;
                         for(int i = 0; i < tda.getFlights()[playerNum].size();i++){
                             if(tda.getFlights()[playerNum].get(i).isPlayable()){
-                                super.game.sendAction(new DiscardCardAction(this,i));
+                                index = i;
+                                break;
                             }
                         }
+                        super.game.sendAction(new DiscardCardAction(this,index));
+                        break;
                     default:
                         break;
                 }

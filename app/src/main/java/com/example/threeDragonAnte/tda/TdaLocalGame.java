@@ -58,6 +58,7 @@ public class TdaLocalGame extends LocalGame{
         ArrayList<Card> playerFlight = tda.getFlights()[player];
         ArrayList<Card> antePile = tda.getAnte();
 
+        //player is discarding a card from their hand
         if(action instanceof DiscardCardAction){
 
             //index of the card being discarded
@@ -81,6 +82,7 @@ public class TdaLocalGame extends LocalGame{
                         return false;
                     } else {
                         Card discarded = hand.get(index);
+                        discarded.setPlayable(false);
                         tda.getHands()[opponent].add(discarded);
                         hand.remove(index);
                         tda.setDiscarding(false);
@@ -93,6 +95,7 @@ public class TdaLocalGame extends LocalGame{
                         return false;
                     } else {
                         Card discarded = hand.get(index);
+                        discarded.setPlayable(false);
                         tda.getHands()[opponent].add(discarded);
                         hand.remove(index);
                         tda.setDiscarding(false);
@@ -166,6 +169,43 @@ public class TdaLocalGame extends LocalGame{
                             tda.setPhase(TdaGameState.ROUND);
                             break;
                         }
+                    case "Brass Dragon":
+                        if (choice == 0) {
+                            //checking if there are any cards that are weaker to give
+                            boolean hasStrong = false;
+                            for (Card h : hand) {
+                                if (h.getStrength() > tda.getLast()[opponent].getStrength()) {
+                                    hasStrong = true;
+                                    h.setPlayable(true);
+                                }
+                            }
+                            if (hasStrong) {
+                                tda.setGameText("Choose a dragon from your hand with" +
+                                        " a strength greater than "
+                                        + tda.getLast()[opponent].getStrength());
+                                tda.setPhase(TdaGameState.DISCARD);
+                            }
+                            //if the computer doesn't have any cards to give, it automatically
+                            //gives 5 gold (switches choice)
+                            else if(super.players[player] instanceof TdaComputerPlayer){
+                                tda.setHoard(opponent, 5);
+                                tda.setHoard(player, -5);
+                                tda.setPhase(TdaGameState.ROUND);
+                                break;
+                            }
+                            else{
+                                tda.setGameText("No stronger dragons to give");
+                            }
+                            return true;
+                        }
+                        //paying 5 gold to the opponent
+                        else if (choice == 1) {
+                            tda.setHoard(opponent, 5);
+                            tda.setHoard(player, -5);
+                            tda.setPhase(TdaGameState.ROUND);
+                            break;
+                        }
+
                 }
             }
             //if you played a card that gave you a choice
@@ -292,11 +332,6 @@ public class TdaLocalGame extends LocalGame{
                 //triggering the power of a card
                 powers(flight.getName());
 
-                //if the player has 1 card or less in their hand they have to draw cards
-                if(hand.size()<=1){
-                    buyCard(player);
-                }
-
                 //cards that have choices
                 switch(flight.getName()){
                     case "Dracolich":
@@ -369,6 +404,8 @@ public class TdaLocalGame extends LocalGame{
 
                     case "Green Dragon":
                         return greenDragon();
+                    case "Brass Dragon":
+                        return brassDragon();
                 }
                 return turnHelper();
             }
@@ -389,6 +426,21 @@ public class TdaLocalGame extends LocalGame{
         tda.setCurrentPlayer(Math.abs(tda.getCurrentPlayer()-1));
         return true;
     }
+
+    /**
+     * helper method if a brass dragon is played
+     * used for the dracolich
+     */
+    public boolean brassDragon(){
+        tda.setGameText("Choose one:");
+        tda.setChoice1("Give a stronger dragon from your hand to your opponent.");
+        tda.setChoice2("Pay your opponent 5 gold.");
+        tda.setPhase(TdaGameState.CHOICE);
+        tda.setDiscarding(true);
+        tda.setCurrentPlayer(Math.abs(tda.getCurrentPlayer()-1));
+        return true;
+    }
+
 
     /**
      * helper method if a blue dragon is played
@@ -524,6 +576,11 @@ public class TdaLocalGame extends LocalGame{
             tda.setGameText(super.playerNames[tda.getRoundLeader()] +
                     " won that round");
             tda.setChoice1("OK");
+            //if the player has only 1 card at the beginning of their turn, they have to buy
+            //a card
+            if(tda.getHands()[tda.getRoundLeader()].size()<=1){
+                buyCard(tda.getRoundLeader());
+            }
             tda.setLast(0,new Card());
             tda.setLast(1,new Card());
             if(tda.getRound()>=3){
