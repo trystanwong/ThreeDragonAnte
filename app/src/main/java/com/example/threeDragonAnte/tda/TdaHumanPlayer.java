@@ -46,7 +46,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private int xDelta;
     private int yDelta;
     private int[] leftMargins;
-    private GestureDetector gestureDetector;
+    private int[] bottomMargins;
+    private int[] rotations;
 
     //text on the board
     private TextView gameText;
@@ -88,9 +89,49 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         //all the margins to keep track of for the cards in the players hand
         //used to move the card ImageView back to their original position
         leftMargins = new int[10];
-        for(int i = 0; i < 10; i++){
-            leftMargins[i] = 80*i+3;
-        }
+        bottomMargins = new int[10];
+        rotations = new int[10];
+
+        leftMargins[0] = 330;
+        bottomMargins[0] = 60;
+        rotations[0] = -5;
+
+        leftMargins[1] = 390;
+        bottomMargins[1] = 60;
+        rotations[1] = 5;
+
+        leftMargins[2] = 448;
+        bottomMargins[2] = 54;
+        rotations[2] = 10;
+
+        leftMargins[3] = 275;
+        bottomMargins[3] = 54;
+        rotations[3] = -10;
+
+        leftMargins[4] = 504;
+        bottomMargins[4] = 43;
+        rotations[4] = 15;
+
+        leftMargins[5] = 225;
+        bottomMargins[5] = 43;
+        rotations[5] = -15;
+
+        leftMargins[6] = 558;
+        bottomMargins[6] = 28;
+        rotations[6] = 20;
+
+        leftMargins[7] = 180;
+        bottomMargins[7] = 28;
+        rotations[7] = -20;
+
+        leftMargins[8] = 610;
+        bottomMargins[8] = 9;
+        rotations[8] = 25;
+
+        leftMargins[9] = 136;
+        bottomMargins[9] = 9;
+        rotations[9] = -25;
+
     }
 
     @Override
@@ -188,7 +229,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     hand[i].setBackgroundColor(Color.GREEN);
                 }
                 else{
-                    hand[i].setBackgroundColor(Color.GRAY);
+                    hand[i].setBackgroundColor(Color.BLACK);
                 }
             }
             //hiding the rest of the images in the hand if there are none.
@@ -202,9 +243,11 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 for (int j = 0; j < currentFlights[i].size(); j++) {
                     setImage(flights[i][j],currentFlights[i].get(j).getName());
                     flights[i][j].setOnTouchListener(this);
+                    flights[i][j].setBackgroundColor(Color.BLACK);
                 }
                 for(int k = currentFlights[i].size(); k<3; k++){
-                    flights[i][k].setImageResource(R.drawable.cardback);
+                    flights[i][k].setImageResource(R.drawable.beige);
+                    flights[i][k].setBackgroundColor(Color.DKGRAY);
                 }
             }
 
@@ -217,8 +260,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 setImage(ante[1],currentAnte.get(1).getName());
             }
             if(currentAnte.size()==0){
-                ante[0].setImageResource(R.drawable.cardback);
-                ante[1].setImageResource(R.drawable.cardback);
+                ante[0].setImageResource(R.drawable.beige);
+                ante[1].setImageResource(R.drawable.beige);
             }
 
             //all the texts on the screen
@@ -294,17 +337,23 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     setImage(selected,flight.getName());
                     strength2.setText(Integer.toString(flight.getStrength()));
                     strength1.setText(Integer.toString(flight.getStrength()));
+                    zoomed.setVisibility(View.VISIBLE);
 
                     switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                         case MotionEvent.ACTION_DOWN:
-                            selected.setVisibility(View.VISIBLE);
-                            strength1.setVisibility(View.VISIBLE);
-                            strength2.setVisibility(View.VISIBLE);
+                            zoomed.setVisibility(View.VISIBLE);
+                            RelativeLayout.LayoutParams zoomParam = (RelativeLayout.LayoutParams) zoomed
+                                    .getLayoutParams();
+
+                            //accounting for display pixels
+                            float z = myActivity.getResources().getDisplayMetrics().density;
+
+                            //moving the zoomed card to where the selected card is
+                            zoomParam.leftMargin= (int)(270*z);
+                            zoomed.setLayoutParams(zoomParam);
                             break;
                         case MotionEvent.ACTION_UP:
-                            selected.setVisibility(View.INVISIBLE);
-                            strength1.setVisibility(View.INVISIBLE);
-                            strength2.setVisibility(View.INVISIBLE);
+                            zoomed.setVisibility(View.INVISIBLE);
                             break;
                     }
                 }
@@ -331,22 +380,21 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams)
                                 view.getLayoutParams();
                         xDelta = x - lParams.leftMargin;
-                        yDelta = y - lParams.bottomMargin;
+                        yDelta = y + lParams.bottomMargin;
 
                         break;
 
                     case MotionEvent.ACTION_UP:
 
+                        //zoomed image becomes invisible
                         zoomed.setVisibility(View.INVISIBLE);
 
-                        view.setRotationX(-26);
-
+                        //parameters of the view
                         RelativeLayout.LayoutParams played = (RelativeLayout.LayoutParams) view
                                 .getLayoutParams();
 
+                        //density of the pixels on the screen used for margins
                         float d = myActivity.getResources().getDisplayMetrics().density;
-
-
 
                         //cards are placed based on what game phase it is
                         if(tda.getCurrentPlayer()==playerNum) {
@@ -372,10 +420,16 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         }
 
                         //returning view back to original spot after its played
-                        int dpValue = leftMargins[i]; // margin in dips
-                        int margin = (int)(dpValue * d);
-                        played.leftMargin = margin;
-                        played.bottomMargin = (int)(3*d);
+                        int leftValue = leftMargins[i]; // margin in dips
+                        int bottomValue = bottomMargins[i]; // margin in dips
+                        int leftMargin = (int)(leftValue * d);
+                        int bottomMargin = (int)(bottomValue * d);
+
+                        //returning the view back to its original parameters
+                        view.setRotationX(-26);
+                        view.setRotation(rotations[i]);
+                        played.leftMargin = leftMargin;
+                        played.bottomMargin = bottomMargin;
                         played.rightMargin = 0;
                         played.topMargin = 0;
                         view.setLayoutParams(played);
@@ -387,6 +441,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
                         //setting the rotation of the card to zero as it moves
                         view.setRotationX(0);
+                        view.setRotation(0);
 
                         //margins of the card
                         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
@@ -396,16 +451,18 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         RelativeLayout.LayoutParams zoomParam = (RelativeLayout.LayoutParams) zoomed
                                 .getLayoutParams();
 
-                        zoomParam.leftMargin= layoutParams.leftMargin;
-                        zoomed.setLayoutParams(zoomParam);
-
                         //accounting for display pixels
                         float z = myActivity.getResources().getDisplayMetrics().density;
 
+                        //moving the zoomed card to where the selected card is
+                        zoomParam.leftMargin= layoutParams.leftMargin - (int)(85*z);
+                        zoomed.setLayoutParams(zoomParam);
+
                         //the zoomed card becomes invisible when the card is moving
-                        if (layoutParams.bottomMargin > (int) (z * 50)) {
+                        if (layoutParams.bottomMargin > (int) (z * 80)) {
                             zoomed.setVisibility(View.INVISIBLE);
                         }
+
                         layoutParams.leftMargin = x - xDelta;
                         layoutParams.bottomMargin = yDelta - y;
                         layoutParams.rightMargin = 0;
@@ -509,8 +566,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         hand[7] = activity.findViewById(R.id.hand0_7);
         hand[8] = activity.findViewById(R.id.hand0_8);
         hand[9] = activity.findViewById(R.id.hand0_9);
-
-        gestureDetector = new GestureDetector(activity, new GestureDetector.SimpleOnGestureListener());
     }
 
     public void setImage(ImageView iv, String name){

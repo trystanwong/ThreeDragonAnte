@@ -30,8 +30,10 @@
 
             <ImageView
                 android:id="@+id/ante1"
-                android:layout_width="75dp"
-                android:layout_height="140dp"
+                android:layout_width="80dp"
+                android:layout_height="145dp"
+                android:background="@color/black"
+                android:padding="2dp"
                 app:srcCompat="@drawable/cardback" />
         </LinearLayout>
 
@@ -49,22 +51,25 @@
 
             <ImageView
                 android:id="@+id/flight2_0"
-                android:layout_width="75dp"
-                android:layout_height="140dp"
+                android:layout_width="80dp"
+                android:layout_height="145dp"
+                android:padding="2dp"
                 app:srcCompat="@drawable/bahamut" />
 
             <ImageView
                 android:id="@+id/flight2_1"
-                android:layout_width="75dp"
-                android:layout_height="140dp"
+                android:layout_width="80dp"
+                android:layout_height="145dp"
                 android:layout_weight="1"
+                android:padding="2dp"
                 app:srcCompat="@drawable/bahamut" />
 
             <ImageView
                 android:id="@+id/flight2_2"
-                android:layout_width="75dp"
-                android:layout_height="140dp"
+                android:layout_width="80dp"
+                android:layout_height="145dp"
                 android:layout_weight="1"
+                android:padding="2dp"
                 app:srcCompat="@drawable/bahamut" />
         </LinearLayout>
 
@@ -327,38 +332,53 @@
             android:layout_marginBottom="150dp"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/hoard0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/chela_one"
-                android:text="Hoard: "
-                android:textColor="#FFFFE0"
-                android:textSize="25dp" />
-
-            <TextView
-                android:id="@+id/hoard0Amount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/chela_one"
-                android:text="50"
-                android:textColor="#FFFFE0"
-                android:textSize="25dp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/player0Name"
+        <LinearLayout
+            android:id="@+id/player0Layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="false"
-            android:layout_marginLeft="20dp"
-            android:layout_marginBottom="150dp"
-            android:fontFamily="@font/chela_one"
-            android:text="Human"
-            android:textColor="#FFFFE0"
-            android:textSize="25dp" />
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="365dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/player0Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/chela_one"
+                android:text="Human"
+                android:textColor="#FFFFE0"
+                android:textSize="25dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/hoard0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/chela_one"
+                    android:text="Hoard: "
+                    android:textColor="#FFFFE0"
+                    android:textSize="25dp" />
+
+                <TextView
+                    android:id="@+id/hoard0Amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/chela_one"
+                    android:text="50"
+                    android:textColor="#FFFFE0"
+                    android:textSize="25dp" />
+            </LinearLayout>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/flight0Text"
@@ -393,29 +413,35 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="240dp"
-            android:background="#FFEB3B"
+            android:background="#FFD100"
             android:orientation="horizontal"
             android:padding="5dp">
 
             <ImageView
                 android:id="@+id/flight0_0"
-                android:layout_width="75dp"
-                android:layout_height="140dp"
-                app:srcCompat="@drawable/cardback" />
+                android:layout_width="80dp"
+                android:layout_height="145dp"
+                android:background="@color/black"
+                android:padding="2dp"
+                app:srcCompat="@drawable/beige" />
 
             <ImageView
                 android:id="@+id/flight0_1"
-                android:layout_width="75dp"
-                android:layout_height="140dp"
+                android:layout_width="80dp"
+                android:layout_height="145dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                app:srcCompat="@drawable/cardback" />
+                android:background="@color/black"
+                android:padding="2dp"
+                app:srcCompat="@drawable/beige" />
 
             <ImageView
                 android:id="@+id/flight0_2"
-                android:layout_width="75dp"
-                android:layout_height="140dp"
-                app:srcCompat="@drawable/cardback" />
+                android:layout_width="80dp"
+                android:layout_height="145dp"
+                android:background="@color/black"
+                android:padding="2dp"
+                app:srcCompat="@drawable/beige" />
         </LinearLayout>
 
         <LinearLayout
@@ -431,9 +457,11 @@
 
             <ImageView
                 android:id="@+id/ante0"
-                android:layout_width="75dp"
-                android:layout_height="140dp"
+                android:layout_width="80dp"
+                android:layout_height="145dp"
+                android:background="@color/black"
                 android:cropToPadding="false"
+                android:padding="2dp"
                 app:srcCompat="@drawable/cardback" />
         </LinearLayout>
 
@@ -453,6 +481,7 @@
                 android:id="@+id/zoom"
                 android:layout_width="250dp"
                 android:layout_height="435dp"
+                android:layout_marginStart="4dp"
                 android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -488,15 +517,81 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
+            android:id="@+id/hand0_9"
+            android:layout_width="80dp"
+            android:layout_height="145dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="136dp"
+            android:layout_marginBottom="9dp"
+            android:background="@color/black"
+            android:cropToPadding="false"
+            android:padding="2dp"
+            android:rotation="-25"
+            android:rotationX="-26"
+            android:visibility="visible"
+            app:srcCompat="@drawable/blackdragon1" />
+
+        <ImageView
+            android:id="@+id/hand0_7"
+            android:layout_width="80dp"
+            android:layout_height="145dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="180dp"
+            android:layout_marginBottom="28dp"
+            android:background="@color/black"
+            android:cropToPadding="false"
+            android:padding="2dp"
+            android:rotation="-20"
+            android:rotationX="-26"
+            android:visibility="visible"
+            app:srcCompat="@drawable/blackdragon1" />
+
+        <ImageView
+            android:id="@+id/hand0_5"
+            android:layout_width="80dp"
+            android:layout_height="145dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="225dp"
+            android:layout_marginBottom="43dp"
+            android:background="@color/black"
+            android:cropToPadding="false"
+            android:padding="2dp"
+            android:rotation="-15"
+            android:rotationX="-26"
+            android:visibility="visible"
+            app:srcCompat="@drawable/blackdragon1" />
+
+        <ImageView
+            android:id="@+id/hand0_3"
+            android:layout_width="80dp"
+            android:layout_height="145dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="275dp"
+            android:layout_marginBottom="54dp"
+            android:background="@color/black"
+            android:cropToPadding="false"
+            android:padding="2dp"
+            android:rotation="-10"
+            android:rotationX="-26"
+            android:visibility="visible"
+            app:srcCompat="@drawable/blackdragon1" />
+
+        <ImageView
             android:id="@+id/hand0_0"
             android:layout_width="80dp"
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="3dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="330dp"
+            android:layout_marginBottom="60dp"
+            android:background="@color/black"
             android:cropToPadding="false"
             android:padding="2dp"
+            android:rotation="-5"
             android:rotationX="-26"
             app:srcCompat="@drawable/blackdragon1" />
 
@@ -506,11 +601,14 @@
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="83dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="390dp"
+            android:layout_marginBottom="60dp"
+            android:background="@color/black"
             android:cropToPadding="false"
             android:padding="2dp"
+            android:rotation="5"
             android:rotationX="-26"
+            android:visibility="visible"
             app:srcCompat="@drawable/blackdragon1" />
 
         <ImageView
@@ -519,24 +617,14 @@
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="163dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="448dp"
+            android:layout_marginBottom="54dp"
+            android:background="@color/black"
             android:cropToPadding="false"
             android:padding="2dp"
+            android:rotation="10"
             android:rotationX="-26"
-            app:srcCompat="@drawable/blackdragon1" />
-
-        <ImageView
-            android:id="@+id/hand0_3"
-            android:layout_width="80dp"
-            android:layout_height="145dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="243dp"
-            android:layout_marginBottom="3dp"
-            android:cropToPadding="false"
-            android:padding="2dp"
-            android:rotationX="-26"
+            android:visibility="visible"
             app:srcCompat="@drawable/blackdragon1" />
 
         <ImageView
@@ -545,24 +633,14 @@
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="323dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="504dp"
+            android:layout_marginBottom="43dp"
+            android:background="@color/black"
             android:cropToPadding="false"
             android:padding="2dp"
+            android:rotation="15"
             android:rotationX="-26"
-            app:srcCompat="@drawable/blackdragon1" />
-
-        <ImageView
-            android:id="@+id/hand0_5"
-            android:layout_width="80dp"
-            android:layout_height="145dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="403dp"
-            android:layout_marginBottom="3dp"
-            android:cropToPadding="false"
-            android:padding="2dp"
-            android:rotationX="-26"
+            android:visibility="visible"
             app:srcCompat="@drawable/blackdragon1" />
 
         <ImageView
@@ -571,24 +649,14 @@
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="483dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="558dp"
+            android:layout_marginBottom="28dp"
+            android:background="@color/black"
             android:cropToPadding="false"
             android:padding="2dp"
+            android:rotation="20"
             android:rotationX="-26"
-            app:srcCompat="@drawable/blackdragon1" />
-
-        <ImageView
-            android:id="@+id/hand0_7"
-            android:layout_width="80dp"
-            android:layout_height="145dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="563dp"
-            android:layout_marginBottom="3dp"
-            android:cropToPadding="false"
-            android:padding="2dp"
-            android:rotationX="-26"
+            android:visibility="visible"
             app:srcCompat="@drawable/blackdragon1" />
 
         <ImageView
@@ -597,24 +665,14 @@
             android:layout_height="145dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="643dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="610dp"
+            android:layout_marginBottom="9dp"
+            android:background="@color/black"
             android:cropToPadding="false"
             android:padding="2dp"
+            android:rotation="25"
             android:rotationX="-26"
-            app:srcCompat="@drawable/blackdragon1" />
-
-        <ImageView
-            android:id="@+id/hand0_9"
-            android:layout_width="80dp"
-            android:layout_height="145dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="723dp"
-            android:layout_marginBottom="3dp"
-            android:cropToPadding="false"
-            android:padding="2dp"
-            android:rotationX="-26"
+            android:visibility="visible"
             app:srcCompat="@drawable/blackdragon1" />
 
     </RelativeLayout>
