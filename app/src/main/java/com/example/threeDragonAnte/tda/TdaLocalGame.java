@@ -54,41 +54,55 @@ public class TdaLocalGame extends LocalGame{
         int opponent = Math.abs(tda.getCurrentPlayer()-1);
         int stakes = tda.getStakes();
         ArrayList<Card> hand = tda.getHands()[player];
+        ArrayList<Card> opFlight = tda.getFlights()[opponent];
+        ArrayList<Card> playerFlight = tda.getFlights()[player];
         ArrayList<Card> antePile = tda.getAnte();
 
         if(action instanceof DiscardCardAction){
 
             //index of the card being discarded
             int index = ((DiscardCardAction) action).getDiscard();
-            switch(tda.getLast()[opponent].getName()){
-                case "Green Dragon":
-                    if(hand.get(index).getStrength()>=tda.getLast()[opponent].getStrength()){
-                        return false;
-                    }
-                    else{
-                        //removing the green background from the playable cards
-                        for(Card c : hand){
-                            c.setPlayable(false);
-                        }
-                        Card discarded = hand.get(index);
-                        tda.getHands()[opponent].add(discarded);
-                        hand.remove(index);
-                        tda.setDiscarding(false);
-                        tda.setPhase(TdaGameState.ROUND);
-                        break;
-                    }
 
-                case "Brass Dragon":
-                    if(hand.get(index).getStrength()<=tda.getLast()[opponent].getStrength()){
+            //if you are discarding because of a thief
+            if(tda.getLast()[player].getName().equals("The Thief")){
+                Card discarded = hand.get(index);
+                discarded.setPlacement(Card.DISCARD);
+                tda.getDiscard().add(discarded);
+                hand.remove(index);
+                tda.setDiscarding(false);
+                tda.setPhase(TdaGameState.ROUND);
+            }
+            else {
+                String name = tda.getLast()[opponent].getName();
+
+                //if a green dragon or tiamat were played by the opponent
+                if(name.equals("Green Dragon")||name.equals("Tiamat")){
+                    if (hand.get(index).getStrength() >= tda.getLast()[opponent].getStrength()) {
                         return false;
-                    }
-                    else{
+                    } else {
                         Card discarded = hand.get(index);
                         tda.getHands()[opponent].add(discarded);
                         hand.remove(index);
                         tda.setDiscarding(false);
                         tda.setPhase(TdaGameState.ROUND);
                     }
+                }
+                //if the brass dragon was played by the opponent
+                else if(name.equals("Brass Dragon")){
+                    if (hand.get(index).getStrength() <= tda.getLast()[opponent].getStrength()) {
+                        return false;
+                    } else {
+                        Card discarded = hand.get(index);
+                        tda.getHands()[opponent].add(discarded);
+                        hand.remove(index);
+                        tda.setDiscarding(false);
+                        tda.setPhase(TdaGameState.ROUND);
+                    }
+                }
+            }
+            //removing the green background from the playable cards
+            for (Card c : hand) {
+                c.setPlayable(false);
             }
             return turnHelper();
         }
@@ -120,7 +134,11 @@ public class TdaLocalGame extends LocalGame{
             int choice = ((ChoiceAction) action).getChoiceNum();
             //if the opponent gave you a choice
             if(!tda.isChoosing()) {
-                switch (tda.getLast()[opponent].getName()) {
+                String name = tda.getLast()[opponent].getName();
+                switch (name) {
+
+                    //if either the Tiamat or Green Dragon were played
+                    case "Tiamat":
                     case "Green Dragon":
                         if (choice == 0) {
                             //checking if there are any cards that are weaker to give
@@ -153,6 +171,26 @@ public class TdaLocalGame extends LocalGame{
             //if you played a card that gave you a choice
             else if(tda.isChoosing()) {
                 switch (tda.getLast()[player].getName()) {
+
+                    case "Tiamat":
+                        int num = 0;
+                        for (Card check : tda.getFlights()[player]) {
+                            if (check.getType() == Card.EVIL) {
+                                num++;
+                            }
+                        }
+                        if (choice == 0) {
+                            tda.setHoard(player, num);
+                            tda.setPhase(TdaGameState.ROUND);
+                        }
+                        if (choice == 1) {
+                            tda.setStakes(stakes + num);
+                            tda.setHoard(opponent, -num);
+                            tda.setPhase(TdaGameState.ROUND);
+                        }
+                        tda.setChooseFrom(0);
+                        tda.setChoosing(false);
+                        return greenDragon();
 
                     case "Dracolich":
                         //evil dragon's power is copied
@@ -264,14 +302,13 @@ public class TdaLocalGame extends LocalGame{
                     case "Dracolich":
                         tda.setGameText("Choose a card to copy its power:");
                         //looking through the opponents flight to see what cards you can copy
-                        ArrayList<Card> oppFlight = tda.getFlights()[opponent];
-                        for(int i = 0; i < oppFlight.size();i++){
-                            Card d = oppFlight.get(i);
+                        for(int i = 0; i < opFlight.size();i++){
+                            Card d = opFlight.get(i);
                             //only discards cards that are dragons
                             // and weaker than the dragon slayer
                             if(d.getType()==Card.EVIL){
                                 tda.addChooseFrom();
-                                tda.setChoices(i,(i+1)+". "+oppFlight.get(i).toString());
+                                tda.setChoices(i,(i+1)+". "+opFlight.get(i).toString());
                             }
                         }
                         if(tda.getChooseFrom()==0){
@@ -282,11 +319,11 @@ public class TdaLocalGame extends LocalGame{
                             tda.setChoosing(true);
                             return true;
                         }
+
                     case "The DragonSlayer":
                         tda.setGameText("Choose a card to discard from opponent's flight:");
 
                         //looking through the opponents flight to see what cards you can discard
-                        ArrayList<Card> opFlight = tda.getFlights()[opponent];
                         for(int i = 0; i < opFlight.size();i++){
                             Card d = opFlight.get(i);
                             //only discards cards that are dragons
@@ -304,6 +341,29 @@ public class TdaLocalGame extends LocalGame{
                             tda.setChoosing(true);
                             return true;
                         }
+                    case "The Thief":
+                        //if there are no cards to discard it does nothing
+                        if(playerFlight.size()==0){
+                            break;
+                        }
+                        else {
+                            //steal 7 g from the stakes
+                            tda.setHoard(player, +7);
+                            tda.setStakes(stakes + 7);
+                            for (Card h : hand) {
+                                h.setPlayable(true);
+                            }
+                            tda.setDiscarding(true);
+                            tda.setGameText("Choose a card from your hand to discard.");
+                            tda.setPhase(TdaGameState.DISCARD);
+                            return true;
+                        }
+                    case "Tiamat":
+                        powers("Black Dragon");
+                        powers("Red Dragon");
+                        powers("White Dragon");
+                        return blueDragon();
+
                     case "Blue Dragon":
                         return blueDragon();
 
@@ -524,11 +584,27 @@ public class TdaLocalGame extends LocalGame{
         int winner = strongestFlight();
 
         //checking for cards that affect the winner of a gambit
+        boolean good = false;
+        boolean bad = false;
         for(int i = 0; i < 2; i++){
             for(Card c : tda.getFlights()[i]){
+                if(c.getType()==Card.GOOD){
+                    good=true;
+                }
+                if(c.getType()==Card.EVIL){
+                    bad = true;
+                }
                 //if the druid was played, the weakest flight wins
                 if(c.getName().equals("The Druid")){
                     return Math.abs(winner-1);
+                }
+                //cant win if you have tiamat and a good dragon in your hand
+                if(c.getName().equals("Tiamat")&&good==true){
+                    return Math.abs(i-1);
+                }
+                //cant win if you have Bahamut and a bad dragon in your hand
+                if(c.getName().equals("Bahamut")&&bad==true){
+                    return Math.abs(i-1);
                 }
             }
         }
@@ -669,10 +745,6 @@ public class TdaLocalGame extends LocalGame{
                     tda.setHoard(player,10);
                     tda.setHoard(opponent,-10);
                 }
-                break;
-            case "Tiamat":
-                powers("Red Dragon");
-                powers("White Dragon");
                 break;
         }
     }
