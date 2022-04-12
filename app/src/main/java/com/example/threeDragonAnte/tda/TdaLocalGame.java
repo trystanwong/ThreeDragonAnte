@@ -605,6 +605,8 @@ public class TdaLocalGame extends LocalGame{
                     }
                 }
                 break;
+            case "The Archmage":
+                break;
         }
     }
 }

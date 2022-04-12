@@ -3,6 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/marcu/ThreeDragonAnte/app/src/main/res/layout/game_config_main.xml" value="0.30052083333333335" />
+        <entry key="..\:/Users/marcu/ThreeDragonAnte/app/src/main/res/layout/game_config_tabhost.xml" value="0.30052083333333335" />
+        <entry key="..\:/Users/marcu/ThreeDragonAnte/app/src/main/res/layout/game_no_gui.xml" value="0.30052083333333335" />
+        <entry key="..\:/Users/marcu/ThreeDragonAnte/app/src/main/res/layout/game_player_list_row.xml" value="0.30052083333333335" />
+        <entry key="..\:/Users/marcu/ThreeDragonAnte/app/src/main/res/layout/game_remote_tab.xml" value="0.30052083333333335" />
+        <entry key="..\:/Users/marcu/ThreeDragonAnte/app/src/main/res/layout/tda_main.xml" value="0.4466666666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.26927083333333335" />
         <entry key="app/src/main/res/layout/game_config_main.xml" value="0.17722222222222223" />
         <entry key="app/src/main/res/layout/game_player_list_row.xml" value="0.112109375" />
