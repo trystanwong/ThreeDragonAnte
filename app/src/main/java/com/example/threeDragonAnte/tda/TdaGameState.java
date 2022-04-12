@@ -176,7 +176,12 @@ public class TdaGameState extends GameState {
      * @param player - which hand is it going to
      */
     public void drawCard(int player){
-        Random r = new Random(987);
+        //9877856 - copper dragon
+        //2304 - thief
+        //3459 - brass dragon
+        //23045 - red dragon
+        //533440 - dracolich
+        Random r = new Random(533440);
         int index = r.nextInt(deck.size());
         Card drawn = deck.get(index);
         deck.remove(index);

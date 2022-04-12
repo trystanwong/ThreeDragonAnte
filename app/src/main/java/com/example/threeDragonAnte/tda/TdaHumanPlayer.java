@@ -400,19 +400,26 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         if(tda.getCurrentPlayer()==playerNum) {
                             switch (tda.getPhase()) {
                                 case TdaGameState.ANTE:
-                                    if (played.bottomMargin > (int) (d * 410) && played.leftMargin > (int) (d * 300)) {
-                                        PlayCardAction playAnte = new PlayCardAction(this, i, Card.ANTE);
+                                    if (played.bottomMargin > (int) (d * 410)
+                                            && played.leftMargin > (int) (d * 300)) {
+                                        PlayCardAction playAnte =
+                                                new PlayCardAction(this, i, Card.ANTE);
                                         super.game.sendAction(playAnte);
                                     }
                                     break;
                                 case ROUND:
                                     if (played.bottomMargin > (int) (d * 200)) {
-                                        PlayCardAction playFlight = new PlayCardAction(this, i, Card.FLIGHT);
+                                        PlayCardAction playFlight =
+                                                new PlayCardAction(this, i, Card.FLIGHT);
                                         super.game.sendAction(playFlight);
                                     }
                                     break;
                                 case DISCARD:
                                     if (played.bottomMargin > (int) (d * 200)) {
+                                        //shows the user what card was discarded
+                                        Toast.makeText(myActivity,
+                                                hand.toString()+" discarded.",
+                                                Toast.LENGTH_SHORT).show();
                                         DiscardCardAction dc = new DiscardCardAction(this,i);
                                         super.game.sendAction(dc);
                                     }

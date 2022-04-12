@@ -4,6 +4,7 @@ import com.example.threeDragonAnte.game.GameComputerPlayer;
 import com.example.threeDragonAnte.game.GamePlayer;
 import com.example.threeDragonAnte.game.infoMsg.GameInfo;
 import com.example.threeDragonAnte.tda.actions.ChoiceAction;
+import com.example.threeDragonAnte.tda.actions.DiscardCardAction;
 import com.example.threeDragonAnte.tda.actions.PlayCardAction;
 
 public class TdaComputerPlayer extends GameComputerPlayer {
@@ -50,6 +51,12 @@ public class TdaComputerPlayer extends GameComputerPlayer {
                     case TdaGameState.CHOICE:
                         super.game.sendAction(new ChoiceAction(this,1));
                         break;
+                    case TdaGameState.DISCARD:
+                        for(int i = 0; i < tda.getFlights()[playerNum].size();i++){
+                            if(tda.getFlights()[playerNum].get(i).isPlayable()){
+                                super.game.sendAction(new DiscardCardAction(this,i));
+                            }
+                        }
                     default:
                         break;
                 }
