@@ -176,7 +176,7 @@ public class TdaGameState extends GameState {
      * @param player - which hand is it going to
      */
     public void drawCard(int player){
-        Random r = new Random(987);
+        Random r = new Random(1700);
         int index = r.nextInt(deck.size());
         Card drawn = deck.get(index);
         deck.remove(index);
