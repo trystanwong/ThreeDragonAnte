@@ -33,16 +33,18 @@ public class TdaMainActivity extends GameMainActivity {
             public GamePlayer createPlayer(String name) {
                 return new TdaHumanPlayer(name);
             }});
+
         playerTypes.add(new GamePlayerType("Computer Player") {
             public GamePlayer createPlayer(String name) {
                 return new TdaComputerPlayer(name);
             }});
 
         // Create a game configuration class for TDA:
-        GameConfig defaultConfig = new GameConfig(playerTypes, 2, 4, "TDA", PORT_NUMBER);
+        GameConfig defaultConfig = new GameConfig
+                (playerTypes, 2, 4, "TDA", PORT_NUMBER);
         defaultConfig.addPlayer("Human", 0); // player 1: a human player
         defaultConfig.addPlayer("Computer", 1); // player 2: a computer player
-        defaultConfig.setRemoteData("Remote Human Player", "", 0);
+        defaultConfig.setRemoteData("Remote Human Player", "", 1);
 
         return defaultConfig;
     }//createDefaultConfig

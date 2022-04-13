@@ -54,8 +54,8 @@ public class TdaComputerPlayer extends GameComputerPlayer {
                     case TdaGameState.DISCARD:
                         //dumb A.I chooses the first playable card to discard
                         int index = 0;
-                        for(int i = 0; i < tda.getFlights()[playerNum].size();i++){
-                            if(tda.getFlights()[playerNum].get(i).isPlayable()){
+                        for(int i = 0; i < tda.getHands()[playerNum].size();i++){
+                            if(tda.getHands()[playerNum].get(i).isPlayable()){
                                 index = i;
                                 break;
                             }

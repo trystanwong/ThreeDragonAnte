@@ -7,10 +7,12 @@ import com.example.threeDragonAnte.tda.actions.ChoiceAction;
 import com.example.threeDragonAnte.tda.actions.ConfirmAction;
 import com.example.threeDragonAnte.tda.actions.DiscardCardAction;
 import com.example.threeDragonAnte.tda.actions.PlayCardAction;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class TdaLocalGame extends LocalGame{
+public class TdaLocalGame extends LocalGame implements Serializable {
 
     private TdaGameState tda;
 
@@ -157,8 +159,14 @@ public class TdaLocalGame extends LocalGame{
                                         " a strength less than "
                                         + tda.getLast()[opponent].getStrength());
                                 tda.setPhase(TdaGameState.DISCARD);
-                            } else {
+                            }
+                            else {
                                 tda.setGameText("No weaker dragons to give");
+                                if(super.players[player] instanceof TdaComputerPlayer){
+                                    tda.setHoard(opponent, 5);
+                                    tda.setHoard(player, -5);
+                                    tda.setPhase(TdaGameState.ROUND);
+                                }
                             }
                             return true;
                         }
@@ -166,9 +174,12 @@ public class TdaLocalGame extends LocalGame{
                         else if (choice == 1) {
                             tda.setHoard(opponent, 5);
                             tda.setHoard(player, -5);
+                            tda.setChoosing(false);
+                            tda.setDiscarding(false);
                             tda.setPhase(TdaGameState.ROUND);
-                            break;
+                            return turnHelper();
                         }
+                        break;
                     case "Brass Dragon":
                         if (choice == 0) {
                             //checking if there are any cards that are weaker to give
@@ -184,6 +195,7 @@ public class TdaLocalGame extends LocalGame{
                                         " a strength greater than "
                                         + tda.getLast()[opponent].getStrength());
                                 tda.setPhase(TdaGameState.DISCARD);
+                                return true;
                             }
                             //if the computer doesn't have any cards to give, it automatically
                             //gives 5 gold (switches choice)
@@ -195,15 +207,15 @@ public class TdaLocalGame extends LocalGame{
                             }
                             else{
                                 tda.setGameText("No stronger dragons to give");
+                                break;
                             }
-                            return true;
                         }
                         //paying 5 gold to the opponent
                         else if (choice == 1) {
                             tda.setHoard(opponent, 5);
                             tda.setHoard(player, -5);
                             tda.setPhase(TdaGameState.ROUND);
-                            break;
+                            return true;
                         }
 
                 }
@@ -236,6 +248,7 @@ public class TdaLocalGame extends LocalGame{
                         //evil dragon's power is copied
                         switch(tda.getFlights()[opponent].get(choice).getName()){
                             case "Blue Dragon":
+                                tda.getLast()[player].setName("Blue Dragon");
                                 blueDragon();
                                 break;
                             case "Green Dragon":
@@ -343,7 +356,8 @@ public class TdaLocalGame extends LocalGame{
                             // and weaker than the dragon slayer
                             if(d.getType()==Card.EVIL){
                                 tda.addChooseFrom();
-                                tda.setChoices(i,(i+1)+". "+opFlight.get(i).toString());
+                                tda.setChoices(tda.getChooseFrom()-1,
+                                        (i+1)+". "+opFlight.get(i).toString());
                             }
                         }
                         if(tda.getChooseFrom()==0){
@@ -570,7 +584,7 @@ public class TdaLocalGame extends LocalGame{
 
         //if the round is over (two cards have been played)
         //and if the gambit is over
-        if(tda.getMoves()%2==0){
+        if(tda.getMoves()%2==0&& !tda.isDiscarding()){
             tda.setRound(tda.getRound()+1);
             tda.setRoundLeader(roundLeader());
             tda.setGameText(super.playerNames[tda.getRoundLeader()] +
@@ -578,8 +592,11 @@ public class TdaLocalGame extends LocalGame{
             tda.setChoice1("OK");
             //if the player has only 1 card at the beginning of their turn, they have to buy
             //a card
-            if(tda.getHands()[tda.getRoundLeader()].size()<=1){
-                buyCard(tda.getRoundLeader());
+            if(tda.getHands()[player].size()<=1){
+                buyCard(player);
+            }
+            if(tda.getHands()[opponent].size()<=1){
+                buyCard(opponent);
             }
             tda.setLast(0,new Card());
             tda.setLast(1,new Card());

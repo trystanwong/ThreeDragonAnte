@@ -6,6 +6,8 @@ import java.util.Random;
 
 public class TdaGameState extends GameState {
 
+    private static final long serialVersionUID = -720211997L;
+
     //all the places a card can be placed
     private ArrayList<Card> deck;
     private ArrayList<Card> discard;
@@ -68,7 +70,7 @@ public class TdaGameState extends GameState {
             hands[i] = new ArrayList<>();
 
             //each player starts off with 6 cards
-            for(int j = 0; j<5; j++){
+            for(int j = 0; j<6; j++){
                 drawCard(i);
             }
             flights[i] = new ArrayList<>();
@@ -182,7 +184,7 @@ public class TdaGameState extends GameState {
         //23045 - red dragon
         //533440 - dracolich
         //334055 - tiamat
-        Random r = new Random(3459);
+        Random r = new Random(533440);
         int index = r.nextInt(deck.size());
         Card drawn = deck.get(index);
         deck.remove(index);

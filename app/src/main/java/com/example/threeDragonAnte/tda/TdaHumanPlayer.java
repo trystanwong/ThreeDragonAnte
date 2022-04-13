@@ -46,7 +46,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     //coordinates of moving cards
     private int xDelta;
     private int yDelta;
-    private int[][][]dimensions;
     private int[] leftMargins;
     private int[] bottomMargins;
     private int[] rotations;
@@ -90,55 +89,11 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
         //all the margins to keep track of for the cards in the players hand
         //used to move the card ImageView back to their original position
-        dimensions = new int[10][10][3];
         leftMargins = new int[10];
         bottomMargins = new int[10];
         rotations = new int[10];
 
-        dimensions[0][0][0] = 360;
-        dimensions[0][0][1] = 60;
-        dimensions[0][0][2] = 0;
 
-
-        leftMargins[0] = 330;
-        bottomMargins[0] = 60;
-        rotations[0] = -5;
-
-        leftMargins[1] = 390;
-        bottomMargins[1] = 60;
-        rotations[1] = 5;
-
-        leftMargins[2] = 448;
-        bottomMargins[2] = 54;
-        rotations[2] = 10;
-
-        leftMargins[3] = 275;
-        bottomMargins[3] = 54;
-        rotations[3] = -10;
-
-        leftMargins[4] = 504;
-        bottomMargins[4] = 43;
-        rotations[4] = 15;
-
-        leftMargins[5] = 225;
-        bottomMargins[5] = 43;
-        rotations[5] = -15;
-
-        leftMargins[6] = 558;
-        bottomMargins[6] = 28;
-        rotations[6] = 20;
-
-        leftMargins[7] = 180;
-        bottomMargins[7] = 28;
-        rotations[7] = -20;
-
-        leftMargins[8] = 610;
-        bottomMargins[8] = 9;
-        rotations[8] = 25;
-
-        leftMargins[9] = 136;
-        bottomMargins[9] = 9;
-        rotations[9] = -25;
 
     }
 
@@ -263,7 +218,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     bottomMargins[0] = 60;
                     hand[0].setRotation(0);
                     rotations[0] = 0;
-
                     break;
                 case 2:
                     for (int i = 0; i < 2; i++) {
@@ -272,36 +226,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         rotations[i] = (int)((Math.pow(-1.0, i + 1)) * 5);
                         params[i].leftMargin = (int) (d * leftMargins[i]);
                         params[i].bottomMargin = (int) (d * bottomMargins[i]);
-                        hand[i].setRotation(rotations[i]);
-                    }
-                    break;
-                case 3:
-                case 5:
-                case 7:
-                case 9:
-                    int middle = currentHand.size()/2;
-                    leftMargins[middle]=360;
-                    bottomMargins[middle]=65;
-                    rotations[middle]=0;
-                    params[middle].leftMargin = (int) (d * leftMargins[middle]);
-                    params[middle].bottomMargin =  (int) (d *bottomMargins[middle]);
-                    hand[middle].setRotation(rotations[middle]);
-
-                    //right side of the middle card
-                    for(int i = (middle)+1; i<currentHand.size(); i++){
-                        leftMargins[i]=360+(60*(i-middle));
-                        bottomMargins[i]=60-(2*i*(i-middle-1));
-                        rotations[i]=7*(i-middle);
-                        params[i].leftMargin = (int) (d * leftMargins[i]);
-                        params[i].bottomMargin =  (int) (d *bottomMargins[i]);
-                        hand[i].setRotation(rotations[i]);
-                    }
-                    for(int i = (middle)-1; i>=0; i--){
-                        leftMargins[i]=360-(60*(middle-i));
-                        bottomMargins[i]=bottomMargins[middle*2-i];
-                        rotations[i]=(7)*(i-middle);
-                        params[i].leftMargin = (int) (d * leftMargins[i]);
-                        params[i].bottomMargin =  (int) (d *bottomMargins[i]);
                         hand[i].setRotation(rotations[i]);
                     }
                     break;
@@ -395,6 +319,36 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         hand[i].setRotation(rotations[i]);
                         params[i].leftMargin = (int) (d * leftMargins[i]);
                         params[i].bottomMargin = (int)(d * bottomMargins[i]);
+                    }
+                    break;
+                case 3:
+                case 5:
+                case 7:
+                case 9:
+                    int middle = currentHand.size()/2;
+                    leftMargins[middle]=360;
+                    bottomMargins[middle]=65;
+                    rotations[middle]=0;
+                    params[middle].leftMargin = (int) (d * leftMargins[middle]);
+                    params[middle].bottomMargin =  (int) (d *bottomMargins[middle]);
+                    hand[middle].setRotation(rotations[middle]);
+
+                    //right side of the middle card
+                    for(int i = (middle)+1; i<currentHand.size(); i++){
+                        leftMargins[i]=360+(60*(i-middle));
+                        bottomMargins[i]=60-(2*i*(i-middle-1));
+                        rotations[i]=7*(i-middle);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin =  (int) (d *bottomMargins[i]);
+                        hand[i].setRotation(rotations[i]);
+                    }
+                    for(int i = (middle)-1; i>=0; i--){
+                        leftMargins[i]=360-(60*(middle-i));
+                        bottomMargins[i]=bottomMargins[middle*2-i];
+                        rotations[i]=(7)*(i-middle);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin =  (int) (d *bottomMargins[i]);
+                        hand[i].setRotation(rotations[i]);
                     }
                     break;
             }
@@ -648,31 +602,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             }
         }
         return true;
-    }
-
-    /**
-     * shows a message to the player based on what card they played
-     * @param name - name of the card played
-     */
-    private void showMessage(String name) {
-
-        String msg = "";
-
-        switch (name){
-            case "Black Dragon":
-                msg = "Stole 2 gold from the stakes";
-                break;
-            case "Druid":
-                msg = "Weakest flight will win now";
-                break;
-
-        }
-
-        if(!msg.equals("")) {
-            Toast.makeText(myActivity, msg,
-                    Toast.LENGTH_SHORT).show();
-        }
-
     }
 
     @Override
