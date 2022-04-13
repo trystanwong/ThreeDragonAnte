@@ -143,7 +143,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         choice2.setVisibility(View.GONE);
                         choice3.setVisibility(View.GONE);
 
-                        // if the dragon slayer was played
+                        //if the player is presented with options to choose from
                         if(tda.isChoosing()){
                             int index = tda.getChooseFrom();
                             //shows all available choices to remove

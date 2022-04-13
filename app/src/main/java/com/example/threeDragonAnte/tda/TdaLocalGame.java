@@ -89,6 +89,11 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         hand.remove(index);
                         tda.setDiscarding(false);
                         tda.setPhase(TdaGameState.ROUND);
+                        //removing the green background from the playable cards
+                        for (Card c : hand) {
+                            c.setPlayable(false);
+                        }
+                        return turnHelper();
                     }
                 }
                 //if the brass dragon was played by the opponent
@@ -102,14 +107,14 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         hand.remove(index);
                         tda.setDiscarding(false);
                         tda.setPhase(TdaGameState.ROUND);
+                        //removing the green background from the playable cards
+                        for (Card c : hand) {
+                            c.setPlayable(false);
+                        }
+                        return turnHelper();
                     }
                 }
             }
-            //removing the green background from the playable cards
-            for (Card c : hand) {
-                c.setPlayable(false);
-            }
-            return turnHelper();
         }
 
         //if the player is confirming a text
