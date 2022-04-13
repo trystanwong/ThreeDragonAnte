@@ -74,10 +74,10 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                 hand.remove(index);
                 tda.setDiscarding(false);
                 tda.setPhase(TdaGameState.ROUND);
+                return turnHelper();
             }
             else {
                 String name = tda.getLast()[opponent].getName();
-
                 //if a green dragon or tiamat were played by the opponent
                 if(name.equals("Green Dragon")||name.equals("Tiamat")){
                     if (hand.get(index).getStrength() >= tda.getLast()[opponent].getStrength()) {
@@ -146,10 +146,11 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                     case "Tiamat":
                     case "Green Dragon":
                         if (choice == 0) {
-                            //checking if there are any cards that are weaker to give
+                            //checking if there are any dragons that are weaker to give
                             boolean hasWeak = false;
                             for (Card h : hand) {
-                                if (h.getStrength() < tda.getLast()[opponent].getStrength()) {
+                                if (h.getStrength() < tda.getLast()[opponent].getStrength()
+                                        && h.getType()!=Card.MORTAL) {
                                     hasWeak = true;
                                     h.setPlayable(true);
                                 }
@@ -185,7 +186,8 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                             //checking if there are any cards that are weaker to give
                             boolean hasStrong = false;
                             for (Card h : hand) {
-                                if (h.getStrength() > tda.getLast()[opponent].getStrength()) {
+                                if (h.getStrength() > tda.getLast()[opponent].getStrength()
+                                &&h.getType()!=Card.MORTAL) {
                                     hasStrong = true;
                                     h.setPlayable(true);
                                 }
@@ -195,35 +197,40 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                                         " a strength greater than "
                                         + tda.getLast()[opponent].getStrength());
                                 tda.setPhase(TdaGameState.DISCARD);
-                                return true;
                             }
                             //if the computer doesn't have any cards to give, it automatically
                             //gives 5 gold (switches choice)
-                            else if(super.players[player] instanceof TdaComputerPlayer){
-                                tda.setHoard(opponent, 5);
-                                tda.setHoard(player, -5);
-                                tda.setPhase(TdaGameState.ROUND);
-                                break;
-                            }
                             else{
                                 tda.setGameText("No stronger dragons to give");
-                                break;
+                                if(super.players[player] instanceof TdaComputerPlayer) {
+                                    tda.setHoard(opponent, 5);
+                                    tda.setHoard(player, -5);
+                                    tda.setPhase(TdaGameState.ROUND);
+                                }
                             }
+                            return true;
                         }
                         //paying 5 gold to the opponent
                         else if (choice == 1) {
                             tda.setHoard(opponent, 5);
                             tda.setHoard(player, -5);
                             tda.setPhase(TdaGameState.ROUND);
-                            return true;
+                            return turnHelper();
                         }
-
                 }
             }
             //if you played a card that gave you a choice
             else if(tda.isChoosing()) {
                 switch (tda.getLast()[player].getName()) {
 
+                    case "The Archmage":
+                        tda.setLast(player,tda.getAnte().get(choice));
+                        tda.setChoosing(false);
+                        tda.setDiscarding(false);
+                        tda.setChooseFrom(0);
+                        tda.setPhase(TdaGameState.ROUND);
+                        sendAction(new PlayCardAction(super.players[player],choice,Card.FLIGHT));
+                        return true;
                     case "Tiamat":
                         int num = 0;
                         for (Card check : tda.getFlights()[player]) {
@@ -274,10 +281,12 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         tda.getFlights()[opponent].remove(choice);
 
                         //returning back to the round
-                        tda.setDiscarding(true);
+                        tda.setDiscarding(false);
+                        tda.setChoosing(false);
                         tda.setPhase(TdaGameState.ROUND);
                         tda.setChooseFrom(0);
                         break;
+
                     case "Blue Dragon":
                         int numEvil = 0;
                         for (Card check : tda.getFlights()[player]) {
@@ -331,16 +340,23 @@ public class TdaLocalGame extends LocalGame implements Serializable {
             //if the card being played is going to a flight
             if (((PlayCardAction) action).getPlacement()==Card.FLIGHT){
 
-                //counts as a move (used for counting rounds)
-                tda.addMove();
-
-                //add the card to the flight
+                //add the card to the flight (unless the archmage was played)
                 int index = ((PlayCardAction) action).getIndex();
-                Card flight = hand.get(index);
-                tda.setLast(player,flight); //keeps track of the card that was played
-                flight.setPlacement(Card.FLIGHT);
-                tda.getFlights()[player].add(new Card(hand.get(index)));
-                tda.getHands()[player].remove(index);
+                Card flight;
+                if(!tda.isMage()) {
+                    //counts as a move (used for counting rounds)
+                    tda.addMove();
+                    flight = hand.get(index);
+                    tda.setLast(player, flight); //keeps track of the card that was played
+                    flight.setPlacement(Card.FLIGHT);
+                    tda.getFlights()[player].add(new Card(hand.get(index)));
+                    tda.getHands()[player].remove(index);
+                }
+                //if the mage was played, the card activated is from the ante pile
+                else{
+                    flight = antePile.get(index);
+                    tda.setMage(false);
+                }
 
                 //triggering the power of a card
                 powers(flight.getName());
@@ -370,22 +386,26 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         }
 
                     case "The DragonSlayer":
-                        tda.setGameText("Choose a card to discard from opponent's flight:");
-
-                        //looking through the opponents flight to see what cards you can discard
                         for(int i = 0; i < opFlight.size();i++){
                             Card d = opFlight.get(i);
                             //only discards cards that are dragons
                             // and weaker than the dragon slayer
                             if(d.getStrength()<8&&d.getType()!=Card.MORTAL){
                                 tda.addChooseFrom();
-                                tda.setChoices(i,(i+1)+". "+opFlight.get(i).toString());
+                                //adds possible choices
+                                tda.setChoices(tda.getChooseFrom()-1,
+                                        (i+1)+". "+opFlight.get(i).toString());
                             }
+                        }
+                        //looking through the opponents flight to see what cards you can discard
+                        if(tda.getFlights()[opponent].size()==0){
+                            break;
                         }
                         if(tda.getChooseFrom()==0){
                             break;
                         }
                         else {
+                            tda.setGameText("Choose a card to discard from opponent's flight:");
                             tda.setPhase(TdaGameState.CHOICE);
                             tda.setChoosing(true);
                             return true;
@@ -407,15 +427,35 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                             tda.setPhase(TdaGameState.DISCARD);
                             return true;
                         }
+                    case "The Archmage":
+                        //if theres no cards in the ante, cant copy anything
+                        if(tda.getAnte().size()==0){
+                            break;
+                        }
+                        else{
+                            //player pays 1 to the stakes
+                            tda.setHoard(player,-1);
+
+                            //getting all the cards in the ante you can choose from
+                            ArrayList<Card> checkAnte = tda.getAnte();
+                            for(int i = 0; i<checkAnte.size();i++){
+                                tda.addChooseFrom();
+                                tda.setChoices(tda.getChooseFrom()-1,
+                                        (i+1)+". "+checkAnte.get(i).toString());
+                            }
+                            tda.setGameText("Choose a card from the ante to copy its power:");
+                            tda.setChoosing(true);
+                            tda.setMage(true);
+                            tda.setPhase(TdaGameState.CHOICE);
+                            return true;
+                        }
                     case "Tiamat":
                         powers("Black Dragon");
                         powers("Red Dragon");
                         powers("White Dragon");
                         return blueDragon();
-
                     case "Blue Dragon":
                         return blueDragon();
-
                     case "Green Dragon":
                         return greenDragon();
                     case "Brass Dragon":
@@ -584,7 +624,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
 
         //if the round is over (two cards have been played)
         //and if the gambit is over
-        if(tda.getMoves()%2==0&& !tda.isDiscarding()){
+        if(tda.getMoves()%2==0&&!tda.isDiscarding()){
             tda.setRound(tda.getRound()+1);
             tda.setRoundLeader(roundLeader());
             tda.setGameText(super.playerNames[tda.getRoundLeader()] +
@@ -730,8 +770,8 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                 tda.setHoard(player,-1);
                 tda.setStakes(stakes+1);
                 break;
-            case "The Archmage":
-                break;
+            case "Gold Dragon":
+
             case "Red Dragon":
                 //random card from opponents hand
                 int indexOfCard = rand.nextInt(tda.getHands()[opponent].size());
