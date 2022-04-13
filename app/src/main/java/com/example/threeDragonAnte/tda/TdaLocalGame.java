@@ -605,7 +605,40 @@ public class TdaLocalGame extends LocalGame{
                     }
                 }
                 break;
-            case "The Archmage":
+            //Discard this card and replace it with the top card of the deck. That cards power triggers
+            //regardless of its strength
+            case "Copper Dragon":
+                //find where the copper dragon has been placed
+                for (Card d: playerFlight) {
+                    //if the card is a copper dragon than remove the card from the flight
+                    if (d.getName().equals("Copper Dragon")) {
+                        playerFlight.remove(d);
+                    }
+                }
+                //get the card from the deck
+                int index = rand.nextInt(tda.getDeck().size());
+                Card d = tda.getDeck().get(index);
+                //remove the card from the deck
+                tda.getDeck().remove(index);
+                d.setPlacement(Card.FLIGHT);
+                //add the card to the flight and activate the power
+                playerFlight.add(d);
+                this.powers(d);
+                break;
+            //Draw a card for each good dragon in your flight
+            case "Gold Dragon":
+                //counter for amount of good dragons
+                int numGoodDragons = 0;
+                //check current players flight to see how many good dragons are within flight
+                for (Card e: playerFlight) {
+                    if (e.getType() == Card.GOOD) {
+                        numGoodDragons++;
+                    }
+                }
+                //go through a for loop to draw a card for each good dragon
+                for (int i = 0; i < numGoodDragons; i++) {
+                    tda.drawCard(player);
+                }
                 break;
         }
     }
