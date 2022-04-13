@@ -28,7 +28,7 @@ public class TdaMainActivity extends GameMainActivity {
         // Define the allowed player types
         ArrayList<GamePlayerType> playerTypes = new ArrayList<GamePlayerType>();
 
-        // TDA has two player types:  human and computer
+        // TDA has three player types:  human regular computer and smart computer player
         playerTypes.add(new GamePlayerType("Local Human Player") {
             public GamePlayer createPlayer(String name) {
                 return new TdaHumanPlayer(name);
@@ -37,11 +37,14 @@ public class TdaMainActivity extends GameMainActivity {
             public GamePlayer createPlayer(String name) {
                 return new TdaComputerPlayer(name);
             }});
+        playerTypes.add(new GamePlayerType("Smart Computer Player") {
+            public GamePlayer createPlayer(String name) {return new TdaComputerPlayer(name);}});
 
         // Create a game configuration class for TDA:
         GameConfig defaultConfig = new GameConfig(playerTypes, 2, 4, "TDA", PORT_NUMBER);
         defaultConfig.addPlayer("Human", 0); // player 1: a human player
         defaultConfig.addPlayer("Computer", 1); // player 2: a computer player
+        defaultConfig.addPlayer("Smart Computer Player", 2); //TODO ASK THE MOFUCKA ABOUT THIS THING RIGHT HERRE
         defaultConfig.setRemoteData("Remote Human Player", "", 0);
 
         return defaultConfig;
