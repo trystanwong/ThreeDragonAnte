@@ -237,81 +237,6 @@
                 android:visibility="gone" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/deck"
-            android:layout_width="75dp"
-            android:layout_height="140dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="300dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/cardback" />
-
-        <TextView
-            android:id="@+id/deckAmount"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="#FFFFDD"
-            android:fontFamily="@font/germania_one"
-            android:gravity="center"
-            android:text="0"
-            android:textColor="@color/black"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/deck"
-            app:layout_constraintEnd_toEndOf="@+id/deck"
-            app:layout_constraintStart_toStartOf="@+id/deck"
-            app:layout_constraintTop_toTopOf="@+id/deck" />
-
-        <ImageView
-            android:id="@+id/discard"
-            android:layout_width="75dp"
-            android:layout_height="140dp"
-            android:layout_marginBottom="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/deck"
-            app:layout_constraintEnd_toEndOf="@+id/deck"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/deck"
-            app:srcCompat="@drawable/cardback" />
-
-        <TextView
-            android:id="@+id/discardAmount"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="#FFFFDD"
-            android:fontFamily="@font/germania_one"
-            android:gravity="center"
-            android:text="0"
-            android:textColor="@color/black"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/discard"
-            app:layout_constraintEnd_toEndOf="@+id/discard"
-            app:layout_constraintStart_toStartOf="@+id/discard"
-            app:layout_constraintTop_toTopOf="@+id/discard" />
-
-        <TextView
-            android:id="@+id/deckText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/chela_one"
-            android:text="Deck"
-            android:textColor="#FFFFE0"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="@+id/deck"
-            app:layout_constraintStart_toStartOf="@+id/deck"
-            app:layout_constraintTop_toTopOf="@+id/deck" />
-
-        <TextView
-            android:id="@+id/discardText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/chela_one"
-            android:text="Discard"
-            android:textColor="#FFFFE0"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="@+id/discard"
-            app:layout_constraintStart_toStartOf="@+id/discard"
-            app:layout_constraintTop_toTopOf="@+id/discard" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -321,6 +246,56 @@
         android:layout_height="match_parent"
         android:layout_weight="0.5">
 
+
+        <ImageView
+            android:id="@+id/dragDeck2"
+            android:layout_width="95dp"
+            android:layout_height="200dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="683dp"
+            android:layout_marginBottom="384dp"
+            app:srcCompat="@drawable/deck" />
+
+        <LinearLayout
+            android:id="@+id/deckLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="false"
+            android:layout_marginRight="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/deckText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/chela_one"
+                android:text="Deck:"
+                android:textColor="#FFFFE0"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/deckAmount"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:fontFamily="@font/germania_one"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="#FFFFDD"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/dragDeck"
+            android:layout_width="75dp"
+            android:layout_height="140dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="685dp"
+            android:layout_marginBottom="409dp"
+            app:srcCompat="@drawable/cardback" />
 
         <LinearLayout
             android:id="@+id/hoard0Layout"
@@ -675,26 +650,6 @@
             android:rotationX="-26"
             android:visibility="visible"
             app:srcCompat="@drawable/blackdragon1" />
-
-        <ImageView
-            android:id="@+id/dragDeck2"
-            android:layout_width="75dp"
-            android:layout_height="140dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="700dp"
-            android:layout_marginBottom="450dp"
-            app:srcCompat="@drawable/cardback" />
-
-        <ImageView
-            android:id="@+id/dragDeck"
-            android:layout_width="75dp"
-            android:layout_height="140dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="695dp"
-            android:layout_marginBottom="445dp"
-            app:srcCompat="@drawable/cardback" />
 
     </RelativeLayout>
 

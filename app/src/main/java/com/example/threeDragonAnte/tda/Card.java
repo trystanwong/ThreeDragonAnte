@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * @author Marcus Rison
  */
 public class Card implements Serializable {
+
     private static final long serialVersionUID = -4269730007792L;
     //instance variables
 
@@ -120,6 +121,9 @@ public class Card implements Serializable {
     }
     public int getStrength(){
         return strength;
+    }
+    public void setStrength(int strength) {
+        this.strength = strength;
     }
 
     /**

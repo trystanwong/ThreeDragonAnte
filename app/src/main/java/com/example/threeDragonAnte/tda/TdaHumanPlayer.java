@@ -100,6 +100,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
         boolean gameInfo = info instanceof TdaGameState;
 
+        //illegal move flashes the screen red
         if (!gameInfo) {
             super.flash(Color.RED, 100);
         } else {
@@ -108,19 +109,18 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             tda = (TdaGameState) info;
 
             switch(tda.getPhase()){
-                case ANTE:
-                    //telling the user what to do in an ante
+                case ANTE: //telling the user what to do in an ante
                     gameText.setText("Move a card from your hand to your ante.");
 
                     choice1.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     choice3.setVisibility(View.GONE);
                     break;
-                case ROUND:
-                    //telling the user what to do in a round
+                case ROUND: //telling the user what to do in a round
                     choice1.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     choice3.setVisibility(View.GONE);
+                    //user should know what to do if the round has started already
                      if(tda.getRound()>0){
                         gameText.setText("Your turn.");
                      }
@@ -129,8 +129,9 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                      }
                     break;
 
-                case CHOICE:
-                    //if a choice is presented to the player
+                case CHOICE: //if a choice is presented to the player
+
+                    //only visible to the player making the choice
                     if(tda.getCurrentPlayer()==playerNum){
 
                         //text of what choice the player has to make
@@ -146,6 +147,15 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
                         //if the player is presented with options to choose from
                         if(tda.isChoosing()){
+                            int index = tda.getChooseFrom();
+                            //shows all available choices to remove
+                            for(int i = 0; i < index; i++){
+                                choices[i].setText(tda.getChoice(i));
+                                choices[i].setVisibility(View.VISIBLE);
+                            }
+                            break;
+                        }
+                        else if(tda.isDiscarding()){
                             int index = tda.getChooseFrom();
                             //shows all available choices to remove
                             for(int i = 0; i < index; i++){
@@ -170,14 +180,17 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     choice3.setVisibility(View.GONE);
                     break;
 
-                case TdaGameState.CONFIRM:
-                    //when a player needs to confirm a change in the game
+                case TdaGameState.CONFIRM: //user needs to confirm game data info
+
+                    //what the user is confirming
                     gameText.setText(tda.getGameText());
                     choice1.setText(tda.getChoice1());
+
                     //only visible to the player who is confirming
                     if(tda.getCurrentPlayer()==playerNum){
                         choice1.setVisibility(View.VISIBLE);
                     }
+                    choice3.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     break;
 
@@ -197,7 +210,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 hand[i].setVisibility(View.VISIBLE);
 
                 //if the card can be chosen, its highlighted green (used for choices)
-                if(currentHand.get(i).isPlayable()){
+                if(tda.getPhase()==DISCARD&&currentHand.get(i).isPlayable()){
                     hand[i].setBackgroundColor(Color.GREEN);
                 }
                 else{
@@ -273,7 +286,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
             //amount in the deck and discard
             deckAmount.setText(Integer.toString(tda.getDeck().size()));
-            discardAmount.setText(Integer.toString(tda.getDiscard().size()));
 
             //stakes
             stakes.setText(Integer.toString(tda.getStakes()));
@@ -363,8 +375,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         }
                     }
                     //moving the cardback image back to its original position
-                    original.leftMargin = (int)(z*695);
-                    original.bottomMargin = (int)(z*445);
+                    original.leftMargin = (int)(z*685);
+                    original.bottomMargin = (int)(z*409);
                     view.setLayoutParams(original);
                     break;
 
@@ -637,10 +649,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         hoard1 = activity.findViewById(R.id.hoard2Amount);
         deckAmount = activity.findViewById(R.id.deckAmount);
         discardAmount = activity.findViewById(R.id.discardAmount);
-        discard = activity.findViewById(R.id.discard);
-        discard.setImageResource(R.drawable.cardback);
         deck = activity.findViewById(R.id.dragDeck2);
-        deck.setImageResource(R.drawable.cardback);
+        deck.setImageResource(R.drawable.deck);
         myName = activity.findViewById(R.id.player0Name);
         opponentName = activity.findViewById(R.id.player2Name);
 
@@ -1106,18 +1116,52 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     public MediaPlayer cardSounds(String name){
         MediaPlayer sound = new MediaPlayer();
         switch(name){
+            case "The Priest":
+                sound = MediaPlayer.create(myActivity,R.raw.priest);
+                break;
             case "Dracolich":
                 sound = MediaPlayer.create(myActivity,R.raw.dracolich);
                 break;
             case "Red Dragon":
                 sound = MediaPlayer.create(myActivity,R.raw.redroar);
                 break;
-            //case "Copper Dragon":
-                //sound = MediaPlayer.create(myActivity,R.raw.copper);
-                //break;
-            case "Black Dragon":
-                sound = MediaPlayer.create(myActivity,R.raw.dracolich);
+            case "Bronze Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.bronze);
                 break;
+            case "Copper Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.copper);
+                break;
+            case "Gold Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.gold);
+                break;
+            case "Black Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.black);
+                break;
+            case "Tiamat":
+                sound = MediaPlayer.create(myActivity,R.raw.tiamat);
+                break;
+            case "The Thief":
+                sound = MediaPlayer.create(myActivity,R.raw.thief);
+                break;
+            case "Silver Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.silver);
+                break;
+            case "Brass Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.brass);
+                break;
+            case "Bahamut":
+                sound = MediaPlayer.create(myActivity,R.raw.bahamut);
+                break;
+            case "Green Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.green);
+                break;
+            case "Blue Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.blue);
+                break;
+            case "White Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.white);
+                break;
+
         }
         return sound;
     }
