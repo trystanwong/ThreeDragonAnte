@@ -57,6 +57,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private MediaPlayer dragonRoar;
     private MediaPlayer backgroundMusic;
     private MediaPlayer confirm;
+    private MediaPlayer drawCard;
 
     //text on the board
     private TextView gameText;
@@ -242,7 +243,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     flights[0][k].setBackgroundColor(Color.DKGRAY);
                 }
             }
-
             //setting opponents flight
             for(int i = 0; i < oppFlight.size();i++){
                 setImage(flights[1][i],oppFlight.get(i).getName());
@@ -328,6 +328,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 break;
             case BEGIN_GAME:
                 if(view == choice1) {
+                    backgroundMusic.setVolume(0.3f,0.3f);
                     backgroundMusic.start();
                     super.game.sendAction(new ConfirmAction(this));
                 }
@@ -363,6 +364,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
                     if(original.leftMargin < (int)(z*650)){
                         if(original.bottomMargin<(int)(z*150)){
+                            drawCard.start();
                             super.game.sendAction(new BuyCardAction(this));
                         }
                     }
@@ -531,9 +533,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                                     if (played.bottomMargin > (int) (d * 200)) {
                                         PlayCardAction playFlight =
                                                 new PlayCardAction(this, i, Card.FLIGHT);
-                                        if(playerHand.get(i).getType()!=Card.MORTAL){
-                                            dragonRoar.start();
-                                        }
+                                        dragonRoar = cardSounds(hand.getName());
+                                        dragonRoar.start();
                                         super.game.sendAction(playFlight);
                                     }
                                     break;
@@ -613,9 +614,10 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         mainLayout = (RelativeLayout)activity.findViewById(R.id.topHalf);
 
         //sounds during the game
-        dragonRoar = MediaPlayer.create(myActivity,R.raw.roar);
+        dragonRoar = MediaPlayer.create(myActivity,R.raw.dracolich);
         backgroundMusic = MediaPlayer.create(myActivity,R.raw.backgroundmusic);
         confirm = MediaPlayer.create(myActivity,R.raw.confirm1);
+        drawCard = MediaPlayer.create(myActivity,R.raw.card);
 
         // Load the layout resource for our GUI
         activity.setContentView(R.layout.tda_main);
@@ -920,6 +922,29 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
     }
 
+    /**
+     * returns a different sound depending on what card is palyed
+     * @param name - name of the card
+     * @return sound of the card
+     */
+    public MediaPlayer cardSounds(String name){
+        MediaPlayer sound = new MediaPlayer();
+        switch(name){
+            case "Dracolich":
+                //sound = MediaPlayer.create(myActivity,R.raw.dracolich);
+                break;
+            case "Red Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.redroar);
+                break;
+            case "Copper Dragon":
+                //sound = MediaPlayer.create(myActivity,R.raw.copper);
+                break;
+            case "Black Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.dracolich);
+                break;
+        }
+        return sound;
+    }
 
     @Override
     public View getTopView() {
