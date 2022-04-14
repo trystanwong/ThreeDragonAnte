@@ -1,6 +1,8 @@
 package com.example.threeDragonAnte.tda;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import com.example.threeDragonAnte.R;
@@ -48,6 +50,7 @@ public class TdaMainActivity extends GameMainActivity {
         defaultConfig.addPlayer("Computer", 1); // player 2: a computer player
         defaultConfig.addPlayer("Smart Computer Player", 2); //
         defaultConfig.setRemoteData("Remote Human Player", "", 0);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         return defaultConfig;
     }//createDefaultConfig

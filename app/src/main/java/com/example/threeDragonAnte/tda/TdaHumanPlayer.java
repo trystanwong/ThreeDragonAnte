@@ -68,6 +68,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private TextView hoard1;
     private TextView discardAmount;
     private TextView deckAmount;
+    private TextView yourFlightStrength;
+    private TextView opponentFlightStrength;
     private Button[] choices;
     private Button choice1;
     private Button choice2;
@@ -106,6 +108,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
         boolean gameInfo = info instanceof TdaGameState;
 
+        //illegal move flashes the screen red
         if (!gameInfo) {
             super.flash(Color.RED, 100);
         } else {
@@ -114,19 +117,18 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             tda = (TdaGameState) info;
 
             switch(tda.getPhase()){
-                case ANTE:
-                    //telling the user what to do in an ante
+                case ANTE: //telling the user what to do in an ante
                     gameText.setText("Move a card from your hand to your ante.");
 
                     choice1.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     choice3.setVisibility(View.GONE);
                     break;
-                case ROUND:
-                    //telling the user what to do in a round
+                case ROUND: //telling the user what to do in a round
                     choice1.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     choice3.setVisibility(View.GONE);
+                    //user should know what to do if the round has started already
                      if(tda.getRound()>0){
                         gameText.setText("Your turn.");
                      }
@@ -135,8 +137,9 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                      }
                     break;
 
-                case CHOICE:
-                    //if a choice is presented to the player
+                case CHOICE: //if a choice is presented to the player
+
+                    //only visible to the player making the choice
                     if(tda.getCurrentPlayer()==playerNum){
 
                         //text of what choice the player has to make
@@ -152,6 +155,15 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
                         //if the player is presented with options to choose from
                         if(tda.isChoosing()){
+                            int index = tda.getChooseFrom();
+                            //shows all available choices to remove
+                            for(int i = 0; i < index; i++){
+                                choices[i].setText(tda.getChoice(i));
+                                choices[i].setVisibility(View.VISIBLE);
+                            }
+                            break;
+                        }
+                        else if(tda.isDiscarding()){
                             int index = tda.getChooseFrom();
                             //shows all available choices to remove
                             for(int i = 0; i < index; i++){
@@ -176,17 +188,19 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     choice3.setVisibility(View.GONE);
                     break;
 
-                case TdaGameState.CONFIRM:
-                    //when a player needs to confirm a change in the game
+                case TdaGameState.CONFIRM: //user needs to confirm game data info
+
+                    //what the user is confirming
                     gameText.setText(tda.getGameText());
                     choice1.setText(tda.getChoice1());
+
                     //only visible to the player who is confirming
                     if(tda.getCurrentPlayer()==playerNum){
                         choice1.setVisibility(View.VISIBLE);
                     }
+                    choice3.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     break;
-
             }
             //if its not the player's turn the computer is making a decision
             if(tda.getCurrentPlayer()!=playerNum&&tda.getPhase()!=CONFIRM){
@@ -199,11 +213,12 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             for(int i = 0; i<currentHand.size();i++){
                 hand[i].setOnTouchListener(this);
                 //setting the image of each card in the hand
-                setImage(hand[i],currentHand.get(i).getName());
+                setImage(hand[i],currentHand.get(i).getName(),
+                        currentHand.get(i).getStrength());
                 hand[i].setVisibility(View.VISIBLE);
 
                 //if the card can be chosen, its highlighted green (used for choices)
-                if(currentHand.get(i).isPlayable()){
+                if(tda.getPhase()==DISCARD&&currentHand.get(i).isPlayable()){
                     hand[i].setBackgroundColor(Color.GREEN);
                 }
                 else{
@@ -229,7 +244,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
             //setting your flight
             for(int i = 0; i < yourFlight.size();i++){
-                setImage(flights[0][i],yourFlight.get(i).getName());
+                setImage(flights[0][i],yourFlight.get(i).getName(),
+                        yourFlight.get(i).getStrength());
                 flights[0][i].setOnTouchListener(this);
                 flights[0][i].setBackgroundColor(Color.BLACK);
             }
@@ -245,7 +261,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             }
             //setting opponents flight
             for(int i = 0; i < oppFlight.size();i++){
-                setImage(flights[1][i],oppFlight.get(i).getName());
+                setImage(flights[1][i],oppFlight.get(i).getName(),
+                        oppFlight.get(i).getStrength());
                 flights[1][i].setOnTouchListener(this);
                 flights[1][i].setBackgroundColor(Color.BLACK);
             }
@@ -258,8 +275,10 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             ArrayList<Card> currentAnte = tda.getAnte();
             try {
                 if (!currentAnte.get(playerNum).getName().equals("")) {
+                    //setting the image of the ante card
                     setImage(ante[0],
-                            currentAnte.get(playerNum).getName());
+                            currentAnte.get(playerNum).getName(),
+                            currentAnte.get(playerNum).getStrength());
                     ante[0].setOnTouchListener(this);
                 }
             }catch(IndexOutOfBoundsException iob){
@@ -268,7 +287,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             try {
                 if (!currentAnte.get(opponent).getName().equals("")) {
                     setImage(ante[1],
-                            currentAnte.get(opponent).getName());
+                            currentAnte.get(opponent).getName(),
+                            currentAnte.get(opponent).getStrength());
                     ante[1].setOnTouchListener(this);
                 }
             }catch(IndexOutOfBoundsException iob){
@@ -279,7 +299,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
             //amount in the deck and discard
             deckAmount.setText(Integer.toString(tda.getDeck().size()));
-            discardAmount.setText(Integer.toString(tda.getDiscard().size()));
 
             //stakes
             stakes.setText(Integer.toString(tda.getStakes()));
@@ -296,6 +315,18 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             choice1.setOnClickListener(this);
             choice2.setOnClickListener(this);
             choice3.setOnClickListener(this);
+
+            //Displays the strength of each flight
+            int strength1 = 0;
+            int strength2 = 0;
+            for (Card c : tda.getFlights()[0]) {
+                strength1 += c.getStrength();
+            }
+            yourFlightStrength.setText("Your Flight " + Integer.toString(strength1));
+            for (Card c : tda.getFlights()[1]) {
+                strength2 += c.getStrength();
+            }
+            opponentFlightStrength.setText(Integer.toString(strength2));
         }
     }
 
@@ -369,8 +400,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         }
                     }
                     //moving the cardback image back to its original position
-                    original.leftMargin = (int)(z*695);
-                    original.bottomMargin = (int)(z*445);
+                    original.leftMargin = (int)(z*685);
+                    original.bottomMargin = (int)(z*409);
                     view.setLayoutParams(original);
                     break;
 
@@ -392,7 +423,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         //if an ante is selected
         if(view == ante[0]){
             Card ante = tda.getAnte().get(playerNum);
-            setImage(selected,ante.getName());
+            setImage(selected,ante.getName(),ante.getStrength());
             strength2.setText(Integer.toString(ante.getStrength()));
             strength1.setText(Integer.toString(ante.getStrength()));
             zoomed.setVisibility(View.VISIBLE);
@@ -419,7 +450,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         //opponent ante
         else if(view == ante[1]){
             Card ante = tda.getAnte().get(opponent);
-            setImage(selected,ante.getName());
+            setImage(selected,ante.getName(),ante.getStrength());
             strength2.setText(Integer.toString(ante.getStrength()));
             strength1.setText(Integer.toString(ante.getStrength()));
             zoomed.setVisibility(View.VISIBLE);
@@ -455,7 +486,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         flight = tda.getFlights()[opponent].get(j);
                     }
 
-                    setImage(selected,flight.getName());
+                    setImage(selected,flight.getName(),flight.getStrength());
                     strength2.setText(Integer.toString(flight.getStrength()));
                     strength1.setText(Integer.toString(flight.getStrength()));
                     zoomed.setVisibility(View.VISIBLE);
@@ -488,7 +519,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             if(view == hand[i]){
 
                 Card hand = playerHand.get(i);
-                setImage(selected,hand.getName());
+                setImage(selected,hand.getName(),hand.getStrength());
                 strength2.setText(Integer.toString(hand.getStrength()));
                 strength1.setText(Integer.toString(hand.getStrength()));
 
@@ -643,12 +674,12 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         hoard1 = activity.findViewById(R.id.hoard2Amount);
         deckAmount = activity.findViewById(R.id.deckAmount);
         discardAmount = activity.findViewById(R.id.discardAmount);
-        discard = activity.findViewById(R.id.discard);
-        discard.setImageResource(R.drawable.cardback);
         deck = activity.findViewById(R.id.dragDeck2);
-        deck.setImageResource(R.drawable.cardback);
+        deck.setImageResource(R.drawable.deck);
         myName = activity.findViewById(R.id.player0Name);
         opponentName = activity.findViewById(R.id.player2Name);
+        yourFlightStrength = activity.findViewById(R.id.flight0Text);
+        opponentFlightStrength = activity.findViewById(R.id.opponentFlightStrengthTV);
 
         //zoomed card
         selected = activity.findViewById(R.id.zoom);
@@ -686,75 +717,270 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         hand[9] = activity.findViewById(R.id.hand0_9);
     }
 
-    public void setImage(ImageView iv, String name){
+    /**
+     * setting the image of the imageview of a card based on what card it is
+     * @param iv - imageview we are changing
+     * @param name - name of the card
+     * @param strength - strength of the card
+     */
+    public void setImage(ImageView iv, String name, int strength){
 
         //all possible names of cards
         switch (name) {
 
             case "Silver Dragon":
-                iv.setImageResource(R.drawable.silverdragon);
+                switch(strength){
+                    case 2:
+                        iv.setImageResource(R.drawable.silverdragon2);
+                        break;
+                    case 3:
+                        iv.setImageResource(R.drawable.silverdragon3);
+                        break;
+                    case 6:
+                        iv.setImageResource(R.drawable.silverdragon6);
+                        break;
+                    case 8:
+                        iv.setImageResource(R.drawable.silverdragon8);
+                        break;
+                    case 10:
+                        iv.setImageResource(R.drawable.silverdragon10);
+                        break;
+                    case 12:
+                        iv.setImageResource(R.drawable.silverdragon12);
+                        break;
+                }
                 break;
             case "Copper Dragon":
-                iv.setImageResource(R.drawable.copperdragon1);
+                switch(strength){
+                    case 1:
+                        iv.setImageResource(R.drawable.copperdragon1);
+                        break;
+                    case 3:
+                        iv.setImageResource(R.drawable.copperdragon3);
+                        break;
+                    case 5:
+                        iv.setImageResource(R.drawable.copperdragon5);
+                        break;
+                    case 7:
+                        iv.setImageResource(R.drawable.copperdragon7);
+                        break;
+                    case 8:
+                        iv.setImageResource(R.drawable.copperdragon8);
+                        break;
+                    case 10:
+                        iv.setImageResource(R.drawable.copperdragon10);
+                        break;
+                }
                 break;
             case "Red Dragon":
-                iv.setImageResource(R.drawable.reddragon3);
+                switch(strength){
+                    case 2:
+                        iv.setImageResource(R.drawable.reddragon2);
+                        break;
+                    case 3:
+                        iv.setImageResource(R.drawable.reddragon3);
+                        break;
+                    case 5:
+                        iv.setImageResource(R.drawable.reddragon5);
+                        break;
+                    case 8:
+                        iv.setImageResource(R.drawable.reddragon8);
+                        break;
+                    case 10:
+                        iv.setImageResource(R.drawable.reddragon10);
+                        break;
+                    case 12:
+                        iv.setImageResource(R.drawable.reddragon12);
+                        break;
+                }
                 break;
             case "Gold Dragon":
-                iv.setImageResource(R.drawable.golddragon6);
+                switch(strength){
+                    case 2:
+                        iv.setImageResource(R.drawable.golddragon2);
+                        break;
+                    case 4:
+                        iv.setImageResource(R.drawable.golddragon4);
+                        break;
+                    case 6:
+                        iv.setImageResource(R.drawable.golddragon6);
+                        break;
+                    case 9:
+                        iv.setImageResource(R.drawable.golddragon9);
+                        break;
+                    case 11:
+                        iv.setImageResource(R.drawable.golddragon11);
+                        break;
+                    case 13:
+                        iv.setImageResource(R.drawable.golddragon13);
+                        break;
+                }
                 break;
             case "Brass Dragon":
-                iv.setImageResource(R.drawable.brassdragon9);
+                switch(strength){
+                    case 1:
+                        iv.setImageResource(R.drawable.brassdragon1);
+                        break;
+                    case 2:
+                        iv.setImageResource(R.drawable.brassdragon2);
+                        break;
+                    case 4:
+                        iv.setImageResource(R.drawable.brassdragon4);
+                        break;
+                    case 5:
+                        iv.setImageResource(R.drawable.brassdragon5);
+                        break;
+                    case 7:
+                        iv.setImageResource(R.drawable.brassdragon7);
+                        break;
+                    case 9:
+                        iv.setImageResource(R.drawable.brassdragon9);
+                        break;
+                }
                 break;
             case "Black Dragon":
-                iv.setImageResource(R.drawable.blackdragon1);
+                switch(strength){
+                    case 1:
+                        iv.setImageResource(R.drawable.blackdragon1);
+                        break;
+                    case 2:
+                        iv.setImageResource(R.drawable.blackdragon2);
+                        break;
+                    case 3:
+                        iv.setImageResource(R.drawable.blackdragon3);
+                        break;
+                    case 5:
+                        iv.setImageResource(R.drawable.blackdragon5);
+                        break;
+                    case 7:
+                        iv.setImageResource(R.drawable.blackdragon7);
+                        break;
+                    case 9:
+                        iv.setImageResource(R.drawable.blackdragon9);
+                        break;
+                }
                 break;
             case "Blue Dragon":
-                iv.setImageResource(R.drawable.bluedragon1);
+                switch(strength){
+                    case 1:
+                        iv.setImageResource(R.drawable.bluedragon1);
+                        break;
+                    case 2:
+                        iv.setImageResource(R.drawable.bluedragon2);
+                        break;
+                    case 4:
+                        iv.setImageResource(R.drawable.bluedragon4);
+                        break;
+                    case 7:
+                        iv.setImageResource(R.drawable.bluedragon7);
+                        break;
+                    case 9:
+                        iv.setImageResource(R.drawable.bluedragon9);
+                        break;
+                    case 11:
+                        iv.setImageResource(R.drawable.bluedragon11);
+                        break;
+                }
                 break;
             case "Bronze Dragon":
-                iv.setImageResource(R.drawable.bronzedragon1);
+                switch(strength){
+                    case 1:
+                        iv.setImageResource(R.drawable.bronzedragon1);
+                        break;
+                    case 3:
+                        iv.setImageResource(R.drawable.bronzedragon3);
+                        break;
+                    case 6:
+                        iv.setImageResource(R.drawable.bronzedragon6);
+                        break;
+                    case 9:
+                        iv.setImageResource(R.drawable.bronzedragon9);
+                        break;
+                    case 11:
+                        iv.setImageResource(R.drawable.bronzedragon11);
+                        break;
+                    case 7:
+                        iv.setImageResource(R.drawable.bronzedragon7);
+                        break;
+                }
                 break;
             case "White Dragon":
-                iv.setImageResource(R.drawable.whitedragon);
+                switch (strength){
+                    case 1:
+                        iv.setImageResource(R.drawable.whitedragon1);
+                        break;
+                    case 2:
+                        iv.setImageResource(R.drawable.whitedragon2);
+                        break;
+                    case 3:
+                        iv.setImageResource(R.drawable.whitedragon3);
+                        break;
+                    case 4:
+                        iv.setImageResource(R.drawable.whitedragon4);
+                        break;
+                    case 6:
+                        iv.setImageResource(R.drawable.whitedragon6);
+                        break;
+                    case 8:
+                        iv.setImageResource(R.drawable.whitedragon8);
+                        break;
+                }
                 break;
             case "Green Dragon":
-                iv.setImageResource(R.drawable.greendragon);
+                switch(strength){
+                    case 1:
+                        iv.setImageResource(R.drawable.greendragon1);
+                        break;
+                    case 2:
+                        iv.setImageResource(R.drawable.greendragon2);
+                        break;
+                    case 4:
+                        iv.setImageResource(R.drawable.greendragon4);
+                        break;
+                    case 6:
+                        iv.setImageResource(R.drawable.greendragon6);
+                        break;
+                    case 8:
+                        iv.setImageResource(R.drawable.greendragon8);
+                        break;
+                    case 10:
+                        iv.setImageResource(R.drawable.greendragon10);
+                        break;
+                }
                 break;
             case "Bahamut":
-                iv.setImageResource(R.drawable.bahamut);
+                iv.setImageResource(R.drawable.bahamut13);
                 break;
             case "Dracolich":
-                iv.setImageResource(R.drawable.dracolich);
+                iv.setImageResource(R.drawable.dracolich10);
                 break;
             case "Tiamat":
-                iv.setImageResource(R.drawable.tiamat);
+                iv.setImageResource(R.drawable.tiamat13);
                 break;
             case "The Princess":
-                iv.setImageResource(R.drawable.princess);
+                iv.setImageResource(R.drawable.princess4);
                 break;
             case "The Fool":
-                iv.setImageResource(R.drawable.fool);
+                iv.setImageResource(R.drawable.fool3);
                 break;
             case "The Druid":
-                iv.setImageResource(R.drawable.druid);
+                iv.setImageResource(R.drawable.druid6);
                 break;
             case "The Archmage":
-                iv.setImageResource(R.drawable.hermit);
+                iv.setImageResource(R.drawable.hermit9);
                 break;
             case "The DragonSlayer":
-                iv.setImageResource(R.drawable.dragonslayer);
+                iv.setImageResource(R.drawable.dragonslayer8);
                 break;
             case "The Priest":
-                iv.setImageResource(R.drawable.priest);
+                iv.setImageResource(R.drawable.priest5);
                 break;
             case "The Thief":
-                iv.setImageResource(R.drawable.thief);
+                iv.setImageResource(R.drawable.thief7);
                 break;
             default:
                 iv.setImageResource(R.drawable.cardback);
                 break;
-
         }
     }
 
@@ -923,25 +1149,59 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     }
 
     /**
-     * returns a different sound depending on what card is palyed
+     * returns a different sound depending on what card is played
      * @param name - name of the card
      * @return sound of the card
      */
     public MediaPlayer cardSounds(String name){
         MediaPlayer sound = new MediaPlayer();
         switch(name){
+            case "The Priest":
+                sound = MediaPlayer.create(myActivity,R.raw.priest);
+                break;
             case "Dracolich":
                 sound = MediaPlayer.create(myActivity,R.raw.dracolich);
                 break;
             case "Red Dragon":
                 sound = MediaPlayer.create(myActivity,R.raw.redroar);
                 break;
-            //case "Copper Dragon":
-                //sound = MediaPlayer.create(myActivity,R.raw.copper);
-                //break;
-            case "Black Dragon":
-                sound = MediaPlayer.create(myActivity,R.raw.dracolich);
+            case "Bronze Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.bronze);
                 break;
+            case "Copper Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.copper);
+                break;
+            case "Gold Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.gold);
+                break;
+            case "Black Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.black);
+                break;
+            case "Tiamat":
+                sound = MediaPlayer.create(myActivity,R.raw.tiamat);
+                break;
+            case "The Thief":
+                sound = MediaPlayer.create(myActivity,R.raw.thief);
+                break;
+            case "Silver Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.silver);
+                break;
+            case "Brass Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.brass);
+                break;
+            case "Bahamut":
+                sound = MediaPlayer.create(myActivity,R.raw.bahamut);
+                break;
+            case "Green Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.green);
+                break;
+            case "Blue Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.blue);
+                break;
+            case "White Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.white);
+                break;
+
         }
         return sound;
     }
