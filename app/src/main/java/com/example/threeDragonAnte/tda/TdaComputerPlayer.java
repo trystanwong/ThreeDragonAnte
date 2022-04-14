@@ -29,6 +29,7 @@ public class TdaComputerPlayer extends GameComputerPlayer {
             }
             //only moves if it's the computer's turn
             else if(tda.getCurrentPlayer()==playerNum){
+                System.out.println(tda.getPhase());
                 //AI takes 1 second to make decision
                 super.sleep(1000);
 
@@ -47,11 +48,12 @@ public class TdaComputerPlayer extends GameComputerPlayer {
                         super.game.sendAction(pca1);
                         break;
 
-                        //dumb A.I always takes option 1
+                        //dumb A.I always takes first option
                     case TdaGameState.CHOICE:
                         super.game.sendAction(new ChoiceAction(this,0));
                         break;
                     case TdaGameState.DISCARD:
+                        System.out.println("wtf");
                         //dumb A.I chooses the first playable card to discard
                         int index = 0;
                         for(int i = 0; i < tda.getHands()[playerNum].size();i++){

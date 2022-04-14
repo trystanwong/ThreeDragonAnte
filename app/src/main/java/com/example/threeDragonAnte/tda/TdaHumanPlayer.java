@@ -160,6 +160,15 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                             }
                             break;
                         }
+                        else if(tda.isDiscarding()){
+                            int index = tda.getChooseFrom();
+                            //shows all available choices to remove
+                            for(int i = 0; i < index; i++){
+                                choices[i].setText(tda.getChoice(i));
+                                choices[i].setVisibility(View.VISIBLE);
+                            }
+                            break;
+                        }
                         choice1.setVisibility(View.VISIBLE);
                         choice2.setVisibility(View.VISIBLE);
                         break;
@@ -184,6 +193,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     if(tda.getCurrentPlayer()==playerNum){
                         choice1.setVisibility(View.VISIBLE);
                     }
+                    choice3.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     break;
 
@@ -203,7 +213,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 hand[i].setVisibility(View.VISIBLE);
 
                 //if the card can be chosen, its highlighted green (used for choices)
-                if(currentHand.get(i).isPlayable()){
+                if(tda.getPhase()==DISCARD&&currentHand.get(i).isPlayable()){
                     hand[i].setBackgroundColor(Color.GREEN);
                 }
                 else{
@@ -279,7 +289,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
             //amount in the deck and discard
             deckAmount.setText(Integer.toString(tda.getDeck().size()));
-            discardAmount.setText(Integer.toString(tda.getDiscard().size()));
 
             //stakes
             stakes.setText(Integer.toString(tda.getStakes()));
@@ -369,8 +378,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         }
                     }
                     //moving the cardback image back to its original position
-                    original.leftMargin = (int)(z*695);
-                    original.bottomMargin = (int)(z*445);
+                    original.leftMargin = (int)(z*685);
+                    original.bottomMargin = (int)(z*409);
                     view.setLayoutParams(original);
                     break;
 
@@ -643,10 +652,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         hoard1 = activity.findViewById(R.id.hoard2Amount);
         deckAmount = activity.findViewById(R.id.deckAmount);
         discardAmount = activity.findViewById(R.id.discardAmount);
-        discard = activity.findViewById(R.id.discard);
-        discard.setImageResource(R.drawable.cardback);
         deck = activity.findViewById(R.id.dragDeck2);
-        deck.setImageResource(R.drawable.cardback);
+        deck.setImageResource(R.drawable.deck);
         myName = activity.findViewById(R.id.player0Name);
         opponentName = activity.findViewById(R.id.player2Name);
 
@@ -930,18 +937,52 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     public MediaPlayer cardSounds(String name){
         MediaPlayer sound = new MediaPlayer();
         switch(name){
+            case "The Priest":
+                sound = MediaPlayer.create(myActivity,R.raw.priest);
+                break;
             case "Dracolich":
                 sound = MediaPlayer.create(myActivity,R.raw.dracolich);
                 break;
             case "Red Dragon":
                 sound = MediaPlayer.create(myActivity,R.raw.redroar);
                 break;
-            //case "Copper Dragon":
-                //sound = MediaPlayer.create(myActivity,R.raw.copper);
-                //break;
-            case "Black Dragon":
-                sound = MediaPlayer.create(myActivity,R.raw.dracolich);
+            case "Bronze Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.bronze);
                 break;
+            case "Copper Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.copper);
+                break;
+            case "Gold Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.gold);
+                break;
+            case "Black Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.black);
+                break;
+            case "Tiamat":
+                sound = MediaPlayer.create(myActivity,R.raw.tiamat);
+                break;
+            case "The Thief":
+                sound = MediaPlayer.create(myActivity,R.raw.thief);
+                break;
+            case "Silver Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.silver);
+                break;
+            case "Brass Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.brass);
+                break;
+            case "Bahamut":
+                sound = MediaPlayer.create(myActivity,R.raw.bahamut);
+                break;
+            case "Green Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.green);
+                break;
+            case "Blue Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.blue);
+                break;
+            case "White Dragon":
+                sound = MediaPlayer.create(myActivity,R.raw.white);
+                break;
+
         }
         return sound;
     }
