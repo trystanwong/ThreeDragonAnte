@@ -77,7 +77,7 @@ public class TdaGameState extends GameState {
         }
 
         lastPlayed = new Card(); //no card played yet at the beginning of the game
-        midGame = false; //not currently in the middle of a game
+        //midGame = false; //not currently in the middle of a game
 
         //no cards selected at the beginning of the game
         last = new Card[2];

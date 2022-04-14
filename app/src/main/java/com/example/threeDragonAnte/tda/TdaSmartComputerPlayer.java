@@ -153,7 +153,38 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
                             }
                         }
 
+                        //requirements for silver dragon if the computer has 1 or more good dragons in their flight
+                        for (Card c: computerFlight) {
+                            if (c.getType() == Card.GOOD) {
+                                if (hasCard("Silver Dragon") != -1) {
+                                    PlayCardAction pca9 = new PlayCardAction(this, hasCard("Silver Dragon"), Card.FLIGHT);
+                                    viableMoves.add(pca9);
+                                }
+                            }
+                        }
 
+                        //requirements for white dragon is if any flight has a mortal
+                        for (Card c: computerFlight) {
+                            if (c.getType() == Card.MORTAL) {
+                                if (hasCard("White Dragon") != -1) {
+                                    PlayCardAction pca10 = new PlayCardAction(this, hasCard("White Dragon"), Card.FLIGHT);
+                                    viableMoves.add(pca10);
+                                }
+                            }
+                        }
+
+                        //requirements for mortal is priority
+                        for (Card c: computerHand) {
+                            if (c.getType() == Card.MORTAL) {
+                                PlayCardAction pca11 = new PlayCardAction(this, computerHand.indexOf(c), Card.FLIGHT);
+                                viableMoves.add(pca11);
+                            }
+                        }
+
+                        //create a random number generator to choose which of the smart moves to play at random
+                        int choice = rand.nextInt(viableMoves.size());
+                        super.game.sendAction(viableMoves.get(choice));
+                        break;
                     //dumb A.I always takes option 1
                     case TdaGameState.CHOICE:
                         super.game.sendAction(new ChoiceAction(this,1));
