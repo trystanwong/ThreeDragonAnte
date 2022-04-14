@@ -68,6 +68,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private TextView hoard1;
     private TextView discardAmount;
     private TextView deckAmount;
+    private TextView yourFlightStrength;
+    private TextView opponentFlightStrength;
     private Button[] choices;
     private Button choice1;
     private Button choice2;
@@ -313,6 +315,18 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             choice1.setOnClickListener(this);
             choice2.setOnClickListener(this);
             choice3.setOnClickListener(this);
+
+            //Displays the strength of each flight
+            int strength1 = 0;
+            int strength2 = 0;
+            for (Card c : tda.getFlights()[0]) {
+                strength1 += c.getStrength();
+            }
+            yourFlightStrength.setText("Your Flight " + Integer.toString(strength1));
+            for (Card c : tda.getFlights()[1]) {
+                strength2 += c.getStrength();
+            }
+            opponentFlightStrength.setText(Integer.toString(strength2));
         }
     }
 
@@ -664,6 +678,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         deck.setImageResource(R.drawable.deck);
         myName = activity.findViewById(R.id.player0Name);
         opponentName = activity.findViewById(R.id.player2Name);
+        yourFlightStrength = activity.findViewById(R.id.flight0Text);
+        opponentFlightStrength = activity.findViewById(R.id.opponentFlightStrengthTV);
 
         //zoomed card
         selected = activity.findViewById(R.id.zoom);
@@ -942,7 +958,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 iv.setImageResource(R.drawable.tiamat13);
                 break;
             case "The Princess":
-                iv.setImageResource(R.drawable.priest5);
+                iv.setImageResource(R.drawable.princess4);
                 break;
             case "The Fool":
                 iv.setImageResource(R.drawable.fool3);
@@ -1133,7 +1149,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     }
 
     /**
-     * returns a different sound depending on what card is palyed
+     * returns a different sound depending on what card is played
      * @param name - name of the card
      * @return sound of the card
      */
