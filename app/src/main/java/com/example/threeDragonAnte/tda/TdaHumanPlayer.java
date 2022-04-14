@@ -10,6 +10,8 @@ import static com.example.threeDragonAnte.tda.TdaGameState.ROUND;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.provider.MediaStore;
 import android.view.DragEvent;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -31,6 +33,7 @@ import com.example.threeDragonAnte.R;
 import com.example.threeDragonAnte.game.GameHumanPlayer;
 import com.example.threeDragonAnte.game.GameMainActivity;
 import com.example.threeDragonAnte.game.infoMsg.GameInfo;
+import com.example.threeDragonAnte.tda.actions.BuyCardAction;
 import com.example.threeDragonAnte.tda.actions.ChoiceAction;
 import com.example.threeDragonAnte.tda.actions.ConfirmAction;
 import com.example.threeDragonAnte.tda.actions.DiscardCardAction;
@@ -49,6 +52,11 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private int[] leftMargins;
     private int[] bottomMargins;
     private int[] rotations;
+
+    //sounds
+    private MediaPlayer dragonRoar;
+    private MediaPlayer backgroundMusic;
+    private MediaPlayer confirm;
 
     //text on the board
     private TextView gameText;
@@ -70,14 +78,13 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private ImageView[][] flights;
     private ImageView discard;
     private ImageView deck;
-
+    private ImageView drag;
 
     //zoomed card
     private ConstraintLayout zoomed;
     private ImageView selected;
     private TextView strength1;
     private TextView strength2;
-
 
     /**
      * constructor
@@ -86,15 +93,11 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
      */
     public TdaHumanPlayer(String name) {
         super(name);
-
         //all the margins to keep track of for the cards in the players hand
         //used to move the card ImageView back to their original position
         leftMargins = new int[10];
         bottomMargins = new int[10];
         rotations = new int[10];
-
-
-
     }
 
     @Override
@@ -109,9 +112,9 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             //current state of the game
             tda = (TdaGameState) info;
 
-
             switch(tda.getPhase()){
                 case ANTE:
+                    //telling the user what to do in an ante
                     gameText.setText("Move a card from your hand to your ante.");
 
                     choice1.setVisibility(View.GONE);
@@ -119,6 +122,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     choice3.setVisibility(View.GONE);
                     break;
                 case ROUND:
+                    //telling the user what to do in a round
                     choice1.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     choice3.setVisibility(View.GONE);
@@ -129,10 +133,12 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         gameText.setText("Move a card from your hand to your flight.");
                      }
                     break;
+
                 case CHOICE:
                     //if a choice is presented to the player
                     if(tda.getCurrentPlayer()==playerNum){
 
+                        //text of what choice the player has to make
                         gameText.setText(tda.getGameText());
 
                         //choices only become visible if necessary
@@ -162,7 +168,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     choice3.setVisibility(View.GONE);
                     break;
                 case TdaGameState.DISCARD:
-
+                    //when the user is discarding a card (a helping text should appear)
                     gameText.setText(tda.getGameText());
                     choice1.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
@@ -170,7 +176,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     break;
 
                 case TdaGameState.CONFIRM:
-
                     //when a player needs to confirm a change in the game
                     gameText.setText(tda.getGameText());
                     choice1.setText(tda.getChoice1());
@@ -297,6 +302,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
     @Override
     public void onClick(View view) {
+        //noise when a button is pressed
+        confirm.start();
         //when the player makes a choice available to them
         switch(tda.getPhase()){
             case CHOICE:
@@ -321,6 +328,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 break;
             case BEGIN_GAME:
                 if(view == choice1) {
+                    backgroundMusic.start();
                     super.game.sendAction(new ConfirmAction(this));
                 }
                 break;
@@ -336,6 +344,49 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
         int opponent = Math.abs(playerNum-1);
 
+        //if the player is attempting to buy from the deck
+        if(view == drag){
+            //accounting for pixel density
+            float z = myActivity.getResources().getDisplayMetrics().density;
+
+            switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_DOWN:
+                    RelativeLayout.LayoutParams zoomed = (RelativeLayout.LayoutParams)
+                            view.getLayoutParams();
+                    xDelta = x - zoomed.leftMargin;
+                    yDelta = y + zoomed.bottomMargin;
+                    break;
+                case MotionEvent.ACTION_UP:
+
+                    RelativeLayout.LayoutParams original = (RelativeLayout.LayoutParams) view
+                            .getLayoutParams();
+
+                    if(original.leftMargin < (int)(z*650)){
+                        if(original.bottomMargin<(int)(z*150)){
+                            super.game.sendAction(new BuyCardAction(this));
+                        }
+                    }
+                    //moving the cardback image back to its original position
+                    original.leftMargin = (int)(z*695);
+                    original.bottomMargin = (int)(z*445);
+                    view.setLayoutParams(original);
+                    break;
+
+
+                case MotionEvent.ACTION_MOVE:
+
+                    //margins of the card
+                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
+                            .getLayoutParams();
+                    layoutParams.leftMargin = x - xDelta;
+                    layoutParams.bottomMargin = yDelta - y;
+                    layoutParams.rightMargin = 0;
+                    layoutParams.topMargin = 0;
+                    view.setLayoutParams(layoutParams);
+                    break;
+            }
+        }
+
         //if an ante is selected
         if(view == ante[0]){
             Card ante = tda.getAnte().get(playerNum);
@@ -345,6 +396,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             zoomed.setVisibility(View.VISIBLE);
             switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                 case MotionEvent.ACTION_DOWN:
+
                     zoomed.setVisibility(View.VISIBLE);
                     RelativeLayout.LayoutParams zoomParam = (RelativeLayout.LayoutParams) zoomed
                             .getLayoutParams();
@@ -356,6 +408,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     zoomParam.leftMargin= (int)(270*z);
                     zoomed.setLayoutParams(zoomParam);
                     break;
+
                 case MotionEvent.ACTION_UP:
                     zoomed.setVisibility(View.INVISIBLE);
                     break;
@@ -406,6 +459,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     zoomed.setVisibility(View.VISIBLE);
 
                     switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+
                         case MotionEvent.ACTION_DOWN:
                             zoomed.setVisibility(View.VISIBLE);
                             RelativeLayout.LayoutParams zoomParam = (RelativeLayout.LayoutParams) zoomed
@@ -477,6 +531,9 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                                     if (played.bottomMargin > (int) (d * 200)) {
                                         PlayCardAction playFlight =
                                                 new PlayCardAction(this, i, Card.FLIGHT);
+                                        if(playerHand.get(i).getType()!=Card.MORTAL){
+                                            dragonRoar.start();
+                                        }
                                         super.game.sendAction(playFlight);
                                     }
                                     break;
@@ -536,6 +593,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                             zoomed.setVisibility(View.INVISIBLE);
                         }
 
+                        //margins of the view change based on where the card is being dragged
                         layoutParams.leftMargin = x - xDelta;
                         layoutParams.bottomMargin = yDelta - y;
                         layoutParams.rightMargin = 0;
@@ -554,6 +612,11 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         myActivity = activity;
         mainLayout = (RelativeLayout)activity.findViewById(R.id.topHalf);
 
+        //sounds during the game
+        dragonRoar = MediaPlayer.create(myActivity,R.raw.roar);
+        backgroundMusic = MediaPlayer.create(myActivity,R.raw.backgroundmusic);
+        confirm = MediaPlayer.create(myActivity,R.raw.confirm1);
+
         // Load the layout resource for our GUI
         activity.setContentView(R.layout.tda_main);
 
@@ -566,6 +629,11 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         choices[1] = choice2;
         choices[2] = choice3;
 
+        //dragged deck card
+        drag = activity.findViewById(R.id.dragDeck);
+        drag.setImageResource(R.drawable.cardback);
+        drag.setOnTouchListener(this);
+
         //text on the board
         gameText = activity.findViewById(R.id.gameText);
         stakes = activity.findViewById(R.id.stakesAmount);
@@ -575,7 +643,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         discardAmount = activity.findViewById(R.id.discardAmount);
         discard = activity.findViewById(R.id.discard);
         discard.setImageResource(R.drawable.cardback);
-        deck = activity.findViewById(R.id.deck);
+        deck = activity.findViewById(R.id.dragDeck2);
         deck.setImageResource(R.drawable.cardback);
         myName = activity.findViewById(R.id.player0Name);
         opponentName = activity.findViewById(R.id.player2Name);
@@ -834,6 +902,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     params[i].bottomMargin =  (int) (d *bottomMargins[i]);
                     hand[i].setRotation(rotations[i]);
                 }
+                //left side of the middle card
                 for(int i = (middle)-1; i>=0; i--){
                     leftMargins[i]=360-(60*(middle-i));
                     bottomMargins[i]=bottomMargins[middle*2-i];

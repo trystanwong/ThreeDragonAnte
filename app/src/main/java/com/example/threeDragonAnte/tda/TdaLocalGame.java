@@ -3,6 +3,7 @@ package com.example.threeDragonAnte.tda;
 import com.example.threeDragonAnte.game.GamePlayer;
 import com.example.threeDragonAnte.game.LocalGame;
 import com.example.threeDragonAnte.game.actionMsg.GameAction;
+import com.example.threeDragonAnte.tda.actions.BuyCardAction;
 import com.example.threeDragonAnte.tda.actions.ChoiceAction;
 import com.example.threeDragonAnte.tda.actions.ConfirmAction;
 import com.example.threeDragonAnte.tda.actions.DiscardCardAction;
@@ -59,6 +60,16 @@ public class TdaLocalGame extends LocalGame implements Serializable {
         ArrayList<Card> opFlight = tda.getFlights()[opponent];
         ArrayList<Card> playerFlight = tda.getFlights()[player];
         ArrayList<Card> antePile = tda.getAnte();
+
+        if(action instanceof BuyCardAction){
+            if(hand.size()>=10){
+                return false;
+            }
+            else{
+                buyCard(player);
+                return true;
+            }
+        }
 
         //player is discarding a card from their hand
         if(action instanceof DiscardCardAction){
@@ -599,8 +610,11 @@ public class TdaLocalGame extends LocalGame implements Serializable {
     public void buyCard(int player) {
 
         //used for where the top card of the deck went in the hand
-        int index = tda.getHands()[player].size();
+        int size = tda.getHands()[player].size();
 
+        if(size>1){
+            tda.drawCard(player);
+        }
         if(tda.getDeck().size()<=4){
             for(int i = tda.getDiscard().size()-1; i>=0; i--) {
                 tda.getDeck().add(tda.getDiscard().get(i));
@@ -612,7 +626,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
         }
 
         //player has to pay the top card of the decks strength in gold to the stakes
-        int payment = tda.getHands()[player].get(index).getStrength();
+        int payment = tda.getHands()[player].get(size).getStrength();
         tda.setHoard(player,-payment);
         tda.setStakes(tda.getStakes()+payment);
 
