@@ -3,7 +3,6 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/msuru/AndroidStudioProjects/SdaCourseApplication/TeamProject/ThreeDragonAnte/app/src/main/res/layout/tda_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.26927083333333335" />
         <entry key="app/src/main/res/layout/game_config_main.xml" value="0.17722222222222223" />
         <entry key="app/src/main/res/layout/game_player_list_row.xml" value="0.112109375" />

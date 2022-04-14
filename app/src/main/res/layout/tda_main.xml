@@ -269,6 +269,7 @@
             android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/deck"
             app:layout_constraintEnd_toEndOf="@+id/deck"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/deck"
             app:srcCompat="@drawable/cardback" />
 

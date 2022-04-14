@@ -522,16 +522,123 @@ public class TdaLocalGame extends LocalGame{
         int playerHoard = tda.getHoards()[player]; //current hoard of the player
         int opponentHoard = tda.getHoards()[opponent]; //current hoard of the opponent
         int stakes = tda.getStakes(); //current stakes of the gambit
+        ArrayList<Card> playerFlight = tda.getFlights()[player]; //current players flight
+        ArrayList<Card> oppFlight = tda.getFlights()[opponent];//opponent of the current players flight
 
         //power based on name
-        switch(name){
+        switch(name) {
             case "Black Dragon":
-                tda.setHoard(player,2);
-                tda.setStakes(stakes-2);
+                tda.setHoard(player, 2);
+                tda.setStakes(stakes - 2);
                 break;
             case "The Priest":
-                tda.setHoard(player,-1);
-                tda.setStakes(stakes+1);
+                tda.setHoard(player, -1);
+                tda.setStakes(stakes + 1);
+                break;
+            //The opponent with the strongest flight pays you 1 gold. Take a random card from that player's hand.
+            case "Red Dragon":
+                //random card from opponents hand
+                int indexOfCard = rand.nextInt(tda.getHands()[opponent].size());
+                //if the strength of the opponents flight is bigger than the current player do the power
+                if (strongestFlight() != player) {
+                    tda.setHoard(player, 1);
+                    tda.setHoard(opponent, -1);
+                    //remove the card from the opponents hand
+                    Card takenCard = tda.getHands()[opponent].remove(indexOfCard);
+                    //add that card to the players hand
+                    tda.getHands()[player].add(takenCard);
+                }
+                break;
+            //Each player with at least one good dragon in their flight draws a card
+            case "Silver Dragon":
+                //if a good dragon has been found
+                boolean goodDragonFound = false;
+                //check the flight of the current player for any good dragons
+                for (Card d: playerFlight) {
+                    //if the first good dragon has been found activate power
+                    if (d.getType() == Card.GOOD && !goodDragonFound) {
+                        tda.drawCard(player);
+                        goodDragonFound = true;
+                    }
+                }
+                //change the boolean back to false to check opponents flight
+                goodDragonFound = false;
+                //check the opponents flight for a good dragon
+                for (Card e: oppFlight) {
+                    //if the first good dragon has been found activate power
+                    if (e.getType() == Card.GOOD && !goodDragonFound) {
+                        tda.drawCard(opponent);
+                        goodDragonFound = true;
+                    }
+                }
+                break;
+            //If any flight includes a mortal, steal 3 gold from the stakes.
+            case "White Dragon":
+                //if a mortal has been found set mortal found to true
+                boolean mortalFound = false;
+                //check the players flight for mortals
+                for (int i = 0; i < playerFlight.size(); i++) {
+                    Card d = playerFlight.get(i);
+                    //if a mortal has been found than continue because the power has already activated
+                    if (mortalFound) {
+                        continue;
+                    }
+                    //if the card at that i index of the flight is a mortal initiate power
+                    if (d.getType() == Card.MORTAL) {
+                        tda.setHoard(player, 3);
+                        tda.setStakes(stakes - 3);
+                        mortalFound = true;
+                    }
+                }
+                //check the opponents flight for mortals
+                for (int j = 0; j < oppFlight.size(); j++) {
+                    Card e = oppFlight.get(j);
+                    //if a mortal has been found than continue because the power has already activated
+                    if (mortalFound) {
+                        continue;
+                    }
+                    //if the card at that j index of the flight is a mortal initiate power
+                    if (e.getType() == Card.MORTAL) {
+                        tda.setHoard(player, 3);
+                        tda.setStakes(stakes - 3);
+                        mortalFound = true;
+                    }
+                }
+                break;
+            //Discard this card and replace it with the top card of the deck. That cards power triggers
+            //regardless of its strength
+            case "Copper Dragon":
+                //find where the copper dragon has been placed
+                for (Card d: playerFlight) {
+                    //if the card is a copper dragon than remove the card from the flight
+                    if (d.getName().equals("Copper Dragon")) {
+                        playerFlight.remove(d);
+                    }
+                }
+                //get the card from the deck
+                int index = rand.nextInt(tda.getDeck().size());
+                Card d = tda.getDeck().get(index);
+                //remove the card from the deck
+                tda.getDeck().remove(index);
+                d.setPlacement(Card.FLIGHT);
+                //add the card to the flight and activate the power
+                playerFlight.add(d);
+                this.powers(d);
+                break;
+            //Draw a card for each good dragon in your flight
+            case "Gold Dragon":
+                //counter for amount of good dragons
+                int numGoodDragons = 0;
+                //check current players flight to see how many good dragons are within flight
+                for (Card e: playerFlight) {
+                    if (e.getType() == Card.GOOD) {
+                        numGoodDragons++;
+                    }
+                }
+                //go through a for loop to draw a card for each good dragon
+                for (int i = 0; i < numGoodDragons; i++) {
+                    tda.drawCard(player);
+                }
                 break;
         }
     }
