@@ -85,6 +85,9 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                 hand.remove(index);
                 tda.setDiscarding(false);
                 tda.setPhase(TdaGameState.ROUND);
+                for (Card c : hand) {
+                    c.setPlayable(false);
+                }
                 return turnHelper();
             }
             else {
@@ -153,6 +156,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
         //a player is making a choice
         else if(action instanceof ChoiceAction){
             int choice = ((ChoiceAction) action).getChoiceNum();
+
             //if the opponent gave you a choice
             if(!tda.isChoosing()) {
                 String name = tda.getLast()[opponent].getName();
@@ -179,11 +183,6 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                             }
                             else {
                                 tda.setGameText("No weaker dragons to give");
-                                if(super.players[player] instanceof TdaComputerPlayer){
-                                    tda.setHoard(opponent, 5);
-                                    tda.setHoard(player, -5);
-                                    tda.setPhase(TdaGameState.ROUND);
-                                }
                             }
                             return true;
                         }
@@ -242,7 +241,8 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                     case "The Princess":
                         switch(playerFlight.get(choice).getName()){
                             case "Brass Dragon":
-                                tda.getLast()[player].setName("Green Dragon");
+                                tda.setChoosing(false);
+                                tda.getLast()[player].setName("Brass Dragon");
                                 return brassDragon();
                             default:
                                 powers(playerFlight.get(choice).getName());
@@ -269,6 +269,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         }
                         if (choice == 0) {
                             tda.setHoard(player, num);
+                            tda.setStakes(stakes - num);
                             tda.setPhase(TdaGameState.ROUND);
                         }
                         if (choice == 1) {
@@ -316,6 +317,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         break;
 
                     case "Blue Dragon":
+                        //checking for the amount of blue dragons in the hand
                         int numEvil = 0;
                         for (Card check : tda.getFlights()[player]) {
                             if (check.getType() == Card.EVIL) {
@@ -324,6 +326,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         }
                         if (choice == 0) {
                             tda.setHoard(player, numEvil);
+                            tda.setStakes(stakes-numEvil);
                             tda.setPhase(TdaGameState.ROUND);
                         }
                         if (choice == 1) {
@@ -468,7 +471,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         else {
                             //steal 7 g from the stakes
                             tda.setHoard(player, +7);
-                            tda.setStakes(stakes + 7);
+                            tda.setStakes(stakes - 7);
                             for (Card h : hand) {
                                 h.setPlayable(true);
                             }
@@ -645,7 +648,6 @@ public class TdaLocalGame extends LocalGame implements Serializable {
 
         //used for where the top card of the deck went in the hand
         int size = tda.getHands()[player].size();
-
         if(size>1){
             tda.drawCard(player);
         }
