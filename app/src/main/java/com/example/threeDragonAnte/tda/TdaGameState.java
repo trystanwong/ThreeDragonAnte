@@ -6,6 +6,8 @@ import java.util.Random;
 
 public class TdaGameState extends GameState {
 
+    private static final long serialVersionUID = -720211997L;
+
     //all the places a card can be placed
     private ArrayList<Card> deck;
     private ArrayList<Card> discard;
@@ -15,7 +17,7 @@ public class TdaGameState extends GameState {
     private int chooseFrom; //list of all the cards a player might have to choose from
     private Card lastPlayed; //the last card that was played
     private Card[] last; //currently selected cards (accounts for two players selecting)
-    private boolean midGame; //used for displaying texts at different points in the game
+    private boolean mage; //used for the archmage power
 
 
     //statistics of the game (hoards and stakes)
@@ -86,6 +88,7 @@ public class TdaGameState extends GameState {
         this.phase = BEGIN_GAME;
         discarding = false;
         choosing = false;
+        mage = false;
         gameText = "Welcome to Three Dragon Ante";
         currentPlayer = 0; //defaulted to player 0
         roundLeader = 0; //defaulted to player 0
@@ -105,7 +108,6 @@ public class TdaGameState extends GameState {
 
     }
 
-
     /**
      * copy constructor for the tdaGameState
      * @param copy instance of the current tdaGameState
@@ -117,6 +119,7 @@ public class TdaGameState extends GameState {
         discarding = copy.discarding;
         choosing = copy.choosing;
         gameText = copy.gameText;
+        mage = copy.mage;
         currentPlayer = copy.currentPlayer;
         roundLeader = copy.roundLeader;
         hoards = new int[2];
@@ -128,7 +131,6 @@ public class TdaGameState extends GameState {
         choices = new String[3][2];
         choices = copy.choices;
         moves = copy.moves;
-        midGame = copy.midGame;
 
         //Copying selected cards and the card that was last played
         lastPlayed = new Card(copy.lastPlayed);
@@ -176,7 +178,18 @@ public class TdaGameState extends GameState {
      * @param player - which hand is it going to
      */
     public void drawCard(int player){
-        Random r = new Random();
+        //seeds for test:
+        //9877856 - copper dragon
+        //2304 - thief
+        //3459 - brass dragon
+        //23045 - red dragon
+        //533440 - dracolich
+        //334055 - tiamat
+        //14565435 - dragon slayer
+        //2123412556 - fool
+        //66644 - gold dragon
+        //554676 - arch mage
+        Random r = new Random(554676);
         int index = r.nextInt(deck.size());
         Card drawn = deck.get(index);
         deck.remove(index);
@@ -365,14 +378,6 @@ public class TdaGameState extends GameState {
         this.moves++;
     }
 
-    public boolean isMidGame() {
-        return midGame;
-    }
-
-    public void setMidGame(boolean midGame) {
-        this.midGame = midGame;
-    }
-
     public int getChooseFrom() {
         return chooseFrom;
     }
@@ -387,5 +392,13 @@ public class TdaGameState extends GameState {
 
     public String getChoice3() {
         return choice3;
+    }
+
+    public boolean isMage() {
+        return mage;
+    }
+
+    public void setMage(boolean mage) {
+        this.mage = mage;
     }
 }

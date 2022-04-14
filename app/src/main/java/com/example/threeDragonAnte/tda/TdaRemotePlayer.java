@@ -10,8 +10,6 @@ import static com.example.threeDragonAnte.tda.TdaGameState.ROUND;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.media.MediaPlayer;
-import android.provider.MediaStore;
 import android.view.DragEvent;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -33,13 +31,12 @@ import com.example.threeDragonAnte.R;
 import com.example.threeDragonAnte.game.GameHumanPlayer;
 import com.example.threeDragonAnte.game.GameMainActivity;
 import com.example.threeDragonAnte.game.infoMsg.GameInfo;
-import com.example.threeDragonAnte.tda.actions.BuyCardAction;
 import com.example.threeDragonAnte.tda.actions.ChoiceAction;
 import com.example.threeDragonAnte.tda.actions.ConfirmAction;
 import com.example.threeDragonAnte.tda.actions.DiscardCardAction;
 import com.example.threeDragonAnte.tda.actions.PlayCardAction;
 
-public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListener, View.OnClickListener{
+public class TdaRemotePlayer extends GameHumanPlayer implements View.OnTouchListener, View.OnClickListener{
 
     private Activity myActivity;
     private ViewGroup mainLayout;
@@ -52,11 +49,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private int[] leftMargins;
     private int[] bottomMargins;
     private int[] rotations;
-
-    //sounds
-    private MediaPlayer dragonRoar;
-    private MediaPlayer backgroundMusic;
-    private MediaPlayer confirm;
 
     //text on the board
     private TextView gameText;
@@ -78,7 +70,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private ImageView[][] flights;
     private ImageView discard;
     private ImageView deck;
-    private ImageView drag;
+
 
     //zoomed card
     private ConstraintLayout zoomed;
@@ -86,18 +78,23 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private TextView strength1;
     private TextView strength2;
 
+
     /**
      * constructor
      *
      * @param name the name of the player
      */
-    public TdaHumanPlayer(String name) {
+    public TdaRemotePlayer(String name) {
         super(name);
+
         //all the margins to keep track of for the cards in the players hand
         //used to move the card ImageView back to their original position
         leftMargins = new int[10];
         bottomMargins = new int[10];
         rotations = new int[10];
+
+
+
     }
 
     @Override
@@ -114,7 +111,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
             switch(tda.getPhase()){
                 case ANTE:
-                    //telling the user what to do in an ante
                     gameText.setText("Move a card from your hand to your ante.");
 
                     choice1.setVisibility(View.GONE);
@@ -122,38 +118,30 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     choice3.setVisibility(View.GONE);
                     break;
                 case ROUND:
-                    //telling the user what to do in a round
                     choice1.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     choice3.setVisibility(View.GONE);
-                     if(tda.getRound()>0){
+                    if(tda.getRound()>0){
                         gameText.setText("Your turn.");
-                     }
-                     else {
+                    }
+                    else {
                         gameText.setText("Move a card from your hand to your flight.");
-                     }
+                    }
                     break;
-
                 case CHOICE:
                     //if a choice is presented to the player
                     if(tda.getCurrentPlayer()==playerNum){
 
-                        //text of what choice the player has to make
                         gameText.setText(tda.getGameText());
 
-                        //choices only become visible if necessary
                         choice1.setText(tda.getChoice1());
                         choice2.setText(tda.getChoice2());
                         choice3.setText(tda.getChoice3());
-                        choice1.setVisibility(View.GONE);
-                        choice2.setVisibility(View.GONE);
-                        choice3.setVisibility(View.GONE);
 
-                        //if the player is presented with options to choose from
+                        // if the dragon slayer was played
                         if(tda.isChoosing()){
-                            int index = tda.getChooseFrom();
                             //shows all available choices to remove
-                            for(int i = 0; i < index; i++){
+                            for(int i = 0; i < tda.getChooseFrom(); i++){
                                 choices[i].setText(tda.getChoice(i));
                                 choices[i].setVisibility(View.VISIBLE);
                             }
@@ -168,7 +156,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     choice3.setVisibility(View.GONE);
                     break;
                 case TdaGameState.DISCARD:
-                    //when the user is discarding a card (a helping text should appear)
+
                     gameText.setText(tda.getGameText());
                     choice1.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
@@ -176,13 +164,9 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     break;
 
                 case TdaGameState.CONFIRM:
-                    //when a player needs to confirm a change in the game
                     gameText.setText(tda.getGameText());
                     choice1.setText(tda.getChoice1());
-                    //only visible to the player who is confirming
-                    if(tda.getCurrentPlayer()==playerNum){
-                        choice1.setVisibility(View.VISIBLE);
-                    }
+                    choice1.setVisibility(View.VISIBLE);
                     choice2.setVisibility(View.GONE);
                     break;
 
@@ -193,9 +177,11 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             }
 
             //displaying all cards on the board
+
             //all cards in the player's hand
             ArrayList<Card> currentHand = tda.getHands()[playerNum];
             for(int i = 0; i<currentHand.size();i++){
+
                 hand[i].setOnTouchListener(this);
                 //setting the image of each card in the hand
                 setImage(hand[i],currentHand.get(i).getName());
@@ -209,69 +195,194 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     hand[i].setBackgroundColor(Color.BLACK);
                 }
             }
-
             //hiding the rest of the images in the hand if there are none.
             for(int i = currentHand.size();i<10;i++){
                 hand[i].setVisibility(View.GONE);
             }
 
-            //orientation of your hand is dependent on how many cards are in your hand
-            cardOrientation();
+            float d = myActivity.getResources().getDisplayMetrics().density;
 
-            //used as the id of the current players opponent
-            int opponent = Math.abs(playerNum-1);
+            RelativeLayout.LayoutParams[] params = new RelativeLayout.LayoutParams[10];
+
+            for(int i = 0; i<10;i++){
+                params[i] = (RelativeLayout.LayoutParams)hand[i].getLayoutParams();
+
+            }
+
+            //orientation of the cards depended on the size of the hand
+            switch(currentHand.size()) {
+                case 1:
+                    params[0].leftMargin = (int) (d * 360);
+                    leftMargins[0] = 360;
+                    params[0].bottomMargin = (int) (d * 60);
+                    bottomMargins[0] = 60;
+                    hand[0].setRotation(0);
+                    rotations[0] = 0;
+                    break;
+                case 2:
+                    for (int i = 0; i < 2; i++) {
+                        leftMargins[i] = (330 + (60 * i));
+                        bottomMargins[i] = 60;
+                        rotations[i] = (int)((Math.pow(-1.0, i + 1)) * 5);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin = (int) (d * bottomMargins[i]);
+                        hand[i].setRotation(rotations[i]);
+                    }
+                    break;
+                case 4:
+                    for (int i = 0; i < 4; i++) {
+                        leftMargins[i] = 270 + (60 * i);
+                        if(i == 0 || i == 3){
+                            rotations[i] = ((int)(10*(Math.pow(-1.0, i+1))));
+                            hand[i].setRotation(rotations[i]);
+                            bottomMargins[i] = 54;
+                        }else {
+                            rotations[i] = ((int) (Math.pow(-1.0, i)) * 5);
+                            hand[i].setRotation(rotations[i]);
+                            bottomMargins[i]= 60;
+                        }
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin = (int)(d*bottomMargins[i]);
+                    }
+                    break;
+                case 6:
+                    for (int i = 0; i < 6; i++) {
+                        leftMargins[i] = 210 + (60 * i);
+                        if(i == 0 || i == 5) {
+                            rotations[i] = ((int) (15 * (Math.pow(-1.0, i+1))));
+                            hand[i].setRotation(rotations[i]);
+                            bottomMargins[i] = 40;
+                        }
+                        else if(i == 1 || i == 4){
+                            rotations[i] = ((int)(10*(Math.pow(-1.0, i))));
+                            hand[i].setRotation(rotations[i]);
+                            bottomMargins[i] = 54;
+                        }else {
+                            rotations[i] = ((int) (Math.pow(-1.0, i+1)) * 5);
+                            hand[i].setRotation(rotations[i]);
+                            bottomMargins[i]= 60;
+                        }
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin = (int)(d * bottomMargins[i]);
+                    }
+                    break;
+                case 8:
+                    for (int i = 0; i < 8; i++) {
+                        leftMargins[i] = 150 + (60 * i);
+                        if(i<4){
+                            rotations[i] = -20 + (5*i);
+                        }
+                        else{
+                            rotations[i] = 5 + (5*(i-4));
+                        }
+                        if(i == 0 || i == 7) {
+                            bottomMargins[i] = 24;
+                        }
+                        else if(i == 1 || i == 6){
+                            bottomMargins[i] = 40;
+                        }
+                        else if(i == 2 || i == 5) {
+                            bottomMargins[i] = 54;
+                        }
+                        else {
+                            bottomMargins[i]= 60;
+                        }
+                        hand[i].setRotation(rotations[i]);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin = (int)(d * bottomMargins[i]);
+                    }
+                    break;
+                case 10:
+                    for (int i = 0; i < 10; i++) {
+                        leftMargins[i] = 90 + (60 * i);
+                        if(i<5){
+                            rotations[i] = -25 + (5*i);
+                        }
+                        else{
+                            rotations[i] = 5 + (5*(i-5));
+                        }
+                        if(i == 0 || i == 9) {
+                            bottomMargins[i] = 2;
+                        }
+                        else if(i == 1 || i == 8){
+                            bottomMargins[i] = 24;
+                        }
+                        else if(i == 2 || i == 7) {
+                            bottomMargins[i] = 40;
+                        }
+                        else if(i == 3 || i == 6) {
+                            bottomMargins[i] = 54;
+                        }
+                        else {
+                            bottomMargins[i]= 60;
+                        }
+                        hand[i].setRotation(rotations[i]);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin = (int)(d * bottomMargins[i]);
+                    }
+                    break;
+                case 3:
+                case 5:
+                case 7:
+                case 9:
+                    int middle = currentHand.size()/2;
+                    leftMargins[middle]=360;
+                    bottomMargins[middle]=65;
+                    rotations[middle]=0;
+                    params[middle].leftMargin = (int) (d * leftMargins[middle]);
+                    params[middle].bottomMargin =  (int) (d *bottomMargins[middle]);
+                    hand[middle].setRotation(rotations[middle]);
+
+                    //right side of the middle card
+                    for(int i = (middle)+1; i<currentHand.size(); i++){
+                        leftMargins[i]=360+(60*(i-middle));
+                        bottomMargins[i]=60-(2*i*(i-middle-1));
+                        rotations[i]=7*(i-middle);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin =  (int) (d *bottomMargins[i]);
+                        hand[i].setRotation(rotations[i]);
+                    }
+                    for(int i = (middle)-1; i>=0; i--){
+                        leftMargins[i]=360-(60*(middle-i));
+                        bottomMargins[i]=bottomMargins[middle*2-i];
+                        rotations[i]=(7)*(i-middle);
+                        params[i].leftMargin = (int) (d * leftMargins[i]);
+                        params[i].bottomMargin =  (int) (d *bottomMargins[i]);
+                        hand[i].setRotation(rotations[i]);
+                    }
+                    break;
+            }
+
+            for(int i = 0; i<10; i++){
+                hand[i].setLayoutParams(params[i]);
+            }
+
+
 
             //all cards in each flight
             ArrayList<Card>[] currentFlights = tda.getFlights();
-            ArrayList<Card> yourFlight = currentFlights[playerNum];
-            ArrayList<Card> oppFlight = currentFlights[opponent];
-
-            //setting your flight
-            for(int i = 0; i < yourFlight.size();i++){
-                setImage(flights[0][i],yourFlight.get(i).getName());
-                flights[0][i].setOnTouchListener(this);
-                flights[0][i].setBackgroundColor(Color.BLACK);
-            }
-            for(int k = yourFlight.size(); k<3; k++){
-                flights[0][k].setImageResource(R.drawable.beige);
-                //open flight spot is green if its your turn and its a round
-                if(tda.getPhase()==ROUND&&tda.getCurrentPlayer()==playerNum){
-                    flights[0][k].setBackgroundColor(Color.GREEN);
+            for(int i = 0; i < 2; i++) {
+                for (int j = 0; j < currentFlights[i].size(); j++) {
+                    setImage(flights[i][j],currentFlights[i].get(j).getName());
+                    flights[i][j].setOnTouchListener(this);
+                    flights[i][j].setBackgroundColor(Color.BLACK);
                 }
-                else {
-                    flights[0][k].setBackgroundColor(Color.DKGRAY);
+                for(int k = currentFlights[i].size(); k<3; k++){
+                    flights[i][k].setImageResource(R.drawable.beige);
+                    flights[i][k].setBackgroundColor(Color.DKGRAY);
                 }
-            }
-
-            //setting opponents flight
-            for(int i = 0; i < oppFlight.size();i++){
-                setImage(flights[1][i],oppFlight.get(i).getName());
-                flights[1][i].setOnTouchListener(this);
-                flights[1][i].setBackgroundColor(Color.BLACK);
-            }
-            for(int k = oppFlight.size(); k<3; k++){
-                flights[1][k].setImageResource(R.drawable.beige);
-                flights[1][k].setBackgroundColor(Color.DKGRAY);
             }
 
             //all cards in the ante's
             ArrayList<Card> currentAnte = tda.getAnte();
-            try {
-                if (!currentAnte.get(playerNum).getName().equals("")) {
-                    setImage(ante[0],
-                            currentAnte.get(playerNum).getName());
-                    ante[0].setOnTouchListener(this);
-                }
-            }catch(IndexOutOfBoundsException iob){
-                ante[0].setImageResource(R.drawable.beige);
+            if(currentAnte.size()>0){
+                setImage(ante[0],currentAnte.get(0).getName());
             }
-            try {
-                if (!currentAnte.get(opponent).getName().equals("")) {
-                    setImage(ante[1],
-                            currentAnte.get(opponent).getName());
-                    ante[1].setOnTouchListener(this);
-                }
-            }catch(IndexOutOfBoundsException iob){
+            if(currentAnte.size()>1){
+                setImage(ante[1],currentAnte.get(1).getName());
+            }
+            if(currentAnte.size()==0){
+                ante[0].setImageResource(R.drawable.beige);
                 ante[1].setImageResource(R.drawable.beige);
             }
 
@@ -285,12 +396,12 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             stakes.setText(Integer.toString(tda.getStakes()));
 
             //hoards
-            hoard0.setText(Integer.toString(tda.getHoards()[playerNum]));
-            hoard1.setText(Integer.toString(tda.getHoards()[opponent]));
+            hoard0.setText(Integer.toString(tda.getHoards()[0]));
+            hoard1.setText(Integer.toString(tda.getHoards()[1]));
 
             //player names
-            opponentName.setText(super.allPlayerNames[opponent]);
-            myName.setText(super.allPlayerNames[playerNum]);
+            opponentName.setText(super.allPlayerNames[1]);
+            myName.setText(super.allPlayerNames[0]);
 
             //choice texts
             choice1.setOnClickListener(this);
@@ -302,8 +413,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
     @Override
     public void onClick(View view) {
-        //noise when a button is pressed
-        confirm.start();
         //when the player makes a choice available to them
         switch(tda.getPhase()){
             case CHOICE:
@@ -328,7 +437,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 break;
             case BEGIN_GAME:
                 if(view == choice1) {
-                    backgroundMusic.start();
                     super.game.sendAction(new ConfirmAction(this));
                 }
                 break;
@@ -342,124 +450,18 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         final int x = (int) motionEvent.getRawX();
         final int y = (int) motionEvent.getRawY();
 
-        int opponent = Math.abs(playerNum-1);
-
-        //if the player is attempting to buy from the deck
-        if(view == drag){
-            //accounting for pixel density
-            float z = myActivity.getResources().getDisplayMetrics().density;
-
-            switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-                case MotionEvent.ACTION_DOWN:
-                    RelativeLayout.LayoutParams zoomed = (RelativeLayout.LayoutParams)
-                            view.getLayoutParams();
-                    xDelta = x - zoomed.leftMargin;
-                    yDelta = y + zoomed.bottomMargin;
-                    break;
-                case MotionEvent.ACTION_UP:
-
-                    RelativeLayout.LayoutParams original = (RelativeLayout.LayoutParams) view
-                            .getLayoutParams();
-
-                    if(original.leftMargin < (int)(z*650)){
-                        if(original.bottomMargin<(int)(z*150)){
-                            super.game.sendAction(new BuyCardAction(this));
-                        }
-                    }
-                    //moving the cardback image back to its original position
-                    original.leftMargin = (int)(z*695);
-                    original.bottomMargin = (int)(z*445);
-                    view.setLayoutParams(original);
-                    break;
-
-
-                case MotionEvent.ACTION_MOVE:
-
-                    //margins of the card
-                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
-                            .getLayoutParams();
-                    layoutParams.leftMargin = x - xDelta;
-                    layoutParams.bottomMargin = yDelta - y;
-                    layoutParams.rightMargin = 0;
-                    layoutParams.topMargin = 0;
-                    view.setLayoutParams(layoutParams);
-                    break;
-            }
-        }
-
-        //if an ante is selected
-        if(view == ante[0]){
-            Card ante = tda.getAnte().get(playerNum);
-            setImage(selected,ante.getName());
-            strength2.setText(Integer.toString(ante.getStrength()));
-            strength1.setText(Integer.toString(ante.getStrength()));
-            zoomed.setVisibility(View.VISIBLE);
-            switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-                case MotionEvent.ACTION_DOWN:
-
-                    zoomed.setVisibility(View.VISIBLE);
-                    RelativeLayout.LayoutParams zoomParam = (RelativeLayout.LayoutParams) zoomed
-                            .getLayoutParams();
-
-                    //accounting for display pixels
-                    float z = myActivity.getResources().getDisplayMetrics().density;
-
-                    //moving the zoomed card to where the selected card is
-                    zoomParam.leftMargin= (int)(270*z);
-                    zoomed.setLayoutParams(zoomParam);
-                    break;
-
-                case MotionEvent.ACTION_UP:
-                    zoomed.setVisibility(View.INVISIBLE);
-                    break;
-            }
-        }
-        //opponent ante
-        else if(view == ante[1]){
-            Card ante = tda.getAnte().get(opponent);
-            setImage(selected,ante.getName());
-            strength2.setText(Integer.toString(ante.getStrength()));
-            strength1.setText(Integer.toString(ante.getStrength()));
-            zoomed.setVisibility(View.VISIBLE);
-            switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-                case MotionEvent.ACTION_DOWN:
-                    zoomed.setVisibility(View.VISIBLE);
-                    RelativeLayout.LayoutParams zoomParam = (RelativeLayout.LayoutParams) zoomed
-                            .getLayoutParams();
-
-                    //accounting for display pixels
-                    float z = myActivity.getResources().getDisplayMetrics().density;
-
-                    //moving the zoomed card to where the selected card is
-                    zoomParam.leftMargin= (int)(270*z);
-                    zoomed.setLayoutParams(zoomParam);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    zoomed.setVisibility(View.INVISIBLE);
-                    break;
-            }
-        }
-
         //if a flight card is touched
         for(int i = 0; i < 2; i++){
             for(int j = 0; j<tda.getFlights()[i].size();j++){
                 if(view == flights[i][j]){
 
-                    Card flight;
-                    if(i == 0) {
-                        flight = tda.getFlights()[playerNum].get(j);
-                    }
-                    else{
-                        flight = tda.getFlights()[opponent].get(j);
-                    }
-
+                    Card flight = tda.getFlights()[i].get(j);
                     setImage(selected,flight.getName());
                     strength2.setText(Integer.toString(flight.getStrength()));
                     strength1.setText(Integer.toString(flight.getStrength()));
                     zoomed.setVisibility(View.VISIBLE);
 
                     switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-
                         case MotionEvent.ACTION_DOWN:
                             zoomed.setVisibility(View.VISIBLE);
                             RelativeLayout.LayoutParams zoomParam = (RelativeLayout.LayoutParams) zoomed
@@ -531,9 +533,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                                     if (played.bottomMargin > (int) (d * 200)) {
                                         PlayCardAction playFlight =
                                                 new PlayCardAction(this, i, Card.FLIGHT);
-                                        if(playerHand.get(i).getType()!=Card.MORTAL){
-                                            dragonRoar.start();
-                                        }
                                         super.game.sendAction(playFlight);
                                     }
                                     break;
@@ -565,7 +564,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                         view.setLayoutParams(played);
                         break;
 
-                        //moving the card with finger
+                    //moving the card with finger
                     case MotionEvent.ACTION_MOVE:
 
 
@@ -575,7 +574,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
                         //margins of the card
                         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
-                                    .getLayoutParams();
+                                .getLayoutParams();
 
                         //margins of the zoomed card
                         RelativeLayout.LayoutParams zoomParam = (RelativeLayout.LayoutParams) zoomed
@@ -593,7 +592,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                             zoomed.setVisibility(View.INVISIBLE);
                         }
 
-                        //margins of the view change based on where the card is being dragged
                         layoutParams.leftMargin = x - xDelta;
                         layoutParams.bottomMargin = yDelta - y;
                         layoutParams.rightMargin = 0;
@@ -612,13 +610,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         myActivity = activity;
         mainLayout = (RelativeLayout)activity.findViewById(R.id.topHalf);
 
-        //sounds during the game
-        dragonRoar = MediaPlayer.create(myActivity,R.raw.roar);
-        backgroundMusic = MediaPlayer.create(myActivity,R.raw.backgroundmusic);
-        confirm = MediaPlayer.create(myActivity,R.raw.confirm1);
-
         // Load the layout resource for our GUI
-        activity.setContentView(R.layout.tda_main);
+        activity.setContentView(R.layout.tda_main_remote);
 
         //choices
         choices = new Button[3];
@@ -629,11 +622,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         choices[1] = choice2;
         choices[2] = choice3;
 
-        //dragged deck card
-        drag = activity.findViewById(R.id.dragDeck);
-        drag.setImageResource(R.drawable.cardback);
-        drag.setOnTouchListener(this);
-
         //text on the board
         gameText = activity.findViewById(R.id.gameText);
         stakes = activity.findViewById(R.id.stakesAmount);
@@ -643,7 +631,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         discardAmount = activity.findViewById(R.id.discardAmount);
         discard = activity.findViewById(R.id.discard);
         discard.setImageResource(R.drawable.cardback);
-        deck = activity.findViewById(R.id.dragDeck2);
+        deck = activity.findViewById(R.id.deck);
         deck.setImageResource(R.drawable.cardback);
         myName = activity.findViewById(R.id.player0Name);
         opponentName = activity.findViewById(R.id.player2Name);
@@ -658,12 +646,12 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
         //flight images
         flights = new ImageView[2][3];
-        flights[0][0] = activity.findViewById(R.id.flight0_0);
-        flights[0][1] = activity.findViewById(R.id.flight0_1);
-        flights[0][2] = activity.findViewById(R.id.flight0_2);
-        flights[1][0] = activity.findViewById(R.id.flight2_0);
-        flights[1][1] = activity.findViewById(R.id.flight2_1);
-        flights[1][2] = activity.findViewById(R.id.flight2_2);
+        flights[playerNum][0] = activity.findViewById(R.id.flight0_0);
+        flights[playerNum][1] = activity.findViewById(R.id.flight0_1);
+        flights[playerNum][2] = activity.findViewById(R.id.flight0_2);
+        flights[Math.abs(playerNum-1)][0] = activity.findViewById(R.id.flight2_0);
+        flights[Math.abs(playerNum-1)][1] = activity.findViewById(R.id.flight2_1);
+        flights[Math.abs(playerNum-1)][2] = activity.findViewById(R.id.flight2_2);
 
         //ante images
         ante = new ImageView[2];
@@ -754,170 +742,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                 break;
 
         }
-    }
-
-    public void cardOrientation(){
-
-        float d = myActivity.getResources().getDisplayMetrics().density;
-
-        RelativeLayout.LayoutParams[] params = new RelativeLayout.LayoutParams[10];
-
-        for(int i = 0; i<10;i++){
-            params[i] = (RelativeLayout.LayoutParams)hand[i].getLayoutParams();
-
-        }
-
-        ArrayList<Card> currentHand = tda.getHands()[playerNum];
-
-        //orientation of the cards depended on the size of the hand
-        switch(currentHand.size()) {
-            case 1:
-                params[0].leftMargin = (int) (d * 360);
-                leftMargins[0] = 360;
-                params[0].bottomMargin = (int) (d * 60);
-                bottomMargins[0] = 60;
-                hand[0].setRotation(0);
-                rotations[0] = 0;
-                break;
-            case 2:
-                for (int i = 0; i < 2; i++) {
-                    leftMargins[i] = (330 + (60 * i));
-                    bottomMargins[i] = 60;
-                    rotations[i] = (int)((Math.pow(-1.0, i + 1)) * 5);
-                    params[i].leftMargin = (int) (d * leftMargins[i]);
-                    params[i].bottomMargin = (int) (d * bottomMargins[i]);
-                    hand[i].setRotation(rotations[i]);
-                }
-                break;
-            case 4:
-                for (int i = 0; i < 4; i++) {
-                    leftMargins[i] = 270 + (60 * i);
-                    if(i == 0 || i == 3){
-                        rotations[i] = ((int)(10*(Math.pow(-1.0, i+1))));
-                        hand[i].setRotation(rotations[i]);
-                        bottomMargins[i] = 54;
-                    }else {
-                        rotations[i] = ((int) (Math.pow(-1.0, i)) * 5);
-                        hand[i].setRotation(rotations[i]);
-                        bottomMargins[i]= 60;
-                    }
-                    params[i].leftMargin = (int) (d * leftMargins[i]);
-                    params[i].bottomMargin = (int)(d*bottomMargins[i]);
-                }
-                break;
-            case 6:
-                for (int i = 0; i < 6; i++) {
-                    leftMargins[i] = 210 + (60 * i);
-                    if(i == 0 || i == 5) {
-                        rotations[i] = ((int) (15 * (Math.pow(-1.0, i+1))));
-                        hand[i].setRotation(rotations[i]);
-                        bottomMargins[i] = 40;
-                    }
-                    else if(i == 1 || i == 4){
-                        rotations[i] = ((int)(10*(Math.pow(-1.0, i))));
-                        hand[i].setRotation(rotations[i]);
-                        bottomMargins[i] = 54;
-                    }else {
-                        rotations[i] = ((int) (Math.pow(-1.0, i+1)) * 5);
-                        hand[i].setRotation(rotations[i]);
-                        bottomMargins[i]= 60;
-                    }
-                    params[i].leftMargin = (int) (d * leftMargins[i]);
-                    params[i].bottomMargin = (int)(d * bottomMargins[i]);
-                }
-                break;
-            case 8:
-                for (int i = 0; i < 8; i++) {
-                    leftMargins[i] = 150 + (60 * i);
-                    if(i<4){
-                        rotations[i] = -20 + (5*i);
-                    }
-                    else{
-                        rotations[i] = 5 + (5*(i-4));
-                    }
-                    if(i == 0 || i == 7) {
-                        bottomMargins[i] = 24;
-                    }
-                    else if(i == 1 || i == 6){
-                        bottomMargins[i] = 40;
-                    }
-                    else if(i == 2 || i == 5) {
-                        bottomMargins[i] = 54;
-                    }
-                    else {
-                        bottomMargins[i]= 60;
-                    }
-                    hand[i].setRotation(rotations[i]);
-                    params[i].leftMargin = (int) (d * leftMargins[i]);
-                    params[i].bottomMargin = (int)(d * bottomMargins[i]);
-                }
-                break;
-            case 10:
-                for (int i = 0; i < 10; i++) {
-                    leftMargins[i] = 90 + (60 * i);
-                    if(i<5){
-                        rotations[i] = -25 + (5*i);
-                    }
-                    else{
-                        rotations[i] = 5 + (5*(i-5));
-                    }
-                    if(i == 0 || i == 9) {
-                        bottomMargins[i] = 2;
-                    }
-                    else if(i == 1 || i == 8){
-                        bottomMargins[i] = 24;
-                    }
-                    else if(i == 2 || i == 7) {
-                        bottomMargins[i] = 40;
-                    }
-                    else if(i == 3 || i == 6) {
-                        bottomMargins[i] = 54;
-                    }
-                    else {
-                        bottomMargins[i]= 60;
-                    }
-                    hand[i].setRotation(rotations[i]);
-                    params[i].leftMargin = (int) (d * leftMargins[i]);
-                    params[i].bottomMargin = (int)(d * bottomMargins[i]);
-                }
-                break;
-            case 3:
-            case 5:
-            case 7:
-            case 9:
-                int middle = currentHand.size()/2;
-                leftMargins[middle]=360;
-                bottomMargins[middle]=65;
-                rotations[middle]=0;
-                params[middle].leftMargin = (int) (d * leftMargins[middle]);
-                params[middle].bottomMargin =  (int) (d *bottomMargins[middle]);
-                hand[middle].setRotation(rotations[middle]);
-
-                //right side of the middle card
-                for(int i = (middle)+1; i<currentHand.size(); i++){
-                    leftMargins[i]=360+(60*(i-middle));
-                    bottomMargins[i]=60-(2*i*(i-middle-1));
-                    rotations[i]=7*(i-middle);
-                    params[i].leftMargin = (int) (d * leftMargins[i]);
-                    params[i].bottomMargin =  (int) (d *bottomMargins[i]);
-                    hand[i].setRotation(rotations[i]);
-                }
-                //left side of the middle card
-                for(int i = (middle)-1; i>=0; i--){
-                    leftMargins[i]=360-(60*(middle-i));
-                    bottomMargins[i]=bottomMargins[middle*2-i];
-                    rotations[i]=(7)*(i-middle);
-                    params[i].leftMargin = (int) (d * leftMargins[i]);
-                    params[i].bottomMargin =  (int) (d *bottomMargins[i]);
-                    hand[i].setRotation(rotations[i]);
-                }
-                break;
-        }
-
-        for(int i = 0; i<10; i++){
-            hand[i].setLayoutParams(params[i]);
-        }
-
     }
 
 

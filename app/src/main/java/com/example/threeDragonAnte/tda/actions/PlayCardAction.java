@@ -5,6 +5,7 @@ import com.example.threeDragonAnte.game.actionMsg.GameAction;
 import com.example.threeDragonAnte.tda.Card;
 
 public class PlayCardAction extends GameAction {
+    private static final long serialVersionUID = -9540192844L;
 
     private int index; //index of the card in the given place
     private int placement; //placement of the card
