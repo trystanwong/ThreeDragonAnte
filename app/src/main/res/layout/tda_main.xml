@@ -54,7 +54,7 @@
                 android:layout_width="80dp"
                 android:layout_height="145dp"
                 android:padding="2dp"
-                app:srcCompat="@drawable/bahamut" />
+                app:srcCompat="@drawable/bahamut13" />
 
             <ImageView
                 android:id="@+id/flight2_1"
@@ -62,7 +62,7 @@
                 android:layout_height="145dp"
                 android:layout_weight="1"
                 android:padding="2dp"
-                app:srcCompat="@drawable/bahamut" />
+                app:srcCompat="@drawable/bahamut13" />
 
             <ImageView
                 android:id="@+id/flight2_2"
@@ -70,7 +70,7 @@
                 android:layout_height="145dp"
                 android:layout_weight="1"
                 android:padding="2dp"
-                app:srcCompat="@drawable/bahamut" />
+                app:srcCompat="@drawable/bahamut13" />
         </LinearLayout>
 
         <TextView
@@ -486,7 +486,7 @@
                 android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/bahamut" />
+                app:srcCompat="@drawable/bahamut13" />
 
             <TextView
                 android:id="@+id/strength2"

@@ -8,12 +8,8 @@ import static com.example.threeDragonAnte.tda.TdaGameState.DISCARD;
 import static com.example.threeDragonAnte.tda.TdaGameState.ROUND;
 
 import android.app.Activity;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.view.DragEvent;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -25,7 +21,6 @@ import android.widget.Toast;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import com.example.threeDragonAnte.R;
 import com.example.threeDragonAnte.game.GameHumanPlayer;
@@ -678,7 +673,7 @@ public class TdaRemotePlayer extends GameHumanPlayer implements View.OnTouchList
         switch (name) {
 
             case "Silver Dragon":
-                iv.setImageResource(R.drawable.silverdragon);
+                iv.setImageResource(R.drawable.silverdragon6);
                 break;
             case "Copper Dragon":
                 iv.setImageResource(R.drawable.copperdragon1);
@@ -702,40 +697,40 @@ public class TdaRemotePlayer extends GameHumanPlayer implements View.OnTouchList
                 iv.setImageResource(R.drawable.bronzedragon1);
                 break;
             case "White Dragon":
-                iv.setImageResource(R.drawable.whitedragon);
+                iv.setImageResource(R.drawable.whitedragon1);
                 break;
             case "Green Dragon":
-                iv.setImageResource(R.drawable.greendragon);
+                iv.setImageResource(R.drawable.greendragon8);
                 break;
             case "Bahamut":
-                iv.setImageResource(R.drawable.bahamut);
+                iv.setImageResource(R.drawable.bahamut13);
                 break;
             case "Dracolich":
-                iv.setImageResource(R.drawable.dracolich);
+                iv.setImageResource(R.drawable.dracolich10);
                 break;
             case "Tiamat":
-                iv.setImageResource(R.drawable.tiamat);
+                iv.setImageResource(R.drawable.tiamat13);
                 break;
             case "The Princess":
-                iv.setImageResource(R.drawable.princess);
+                iv.setImageResource(R.drawable.princess4);
                 break;
             case "The Fool":
-                iv.setImageResource(R.drawable.fool);
+                iv.setImageResource(R.drawable.fool3);
                 break;
             case "The Druid":
-                iv.setImageResource(R.drawable.druid);
+                iv.setImageResource(R.drawable.druid6);
                 break;
             case "The Archmage":
-                iv.setImageResource(R.drawable.hermit);
+                iv.setImageResource(R.drawable.hermit9);
                 break;
             case "The DragonSlayer":
-                iv.setImageResource(R.drawable.dragonslayer);
+                iv.setImageResource(R.drawable.dragonslayer8);
                 break;
             case "The Priest":
-                iv.setImageResource(R.drawable.priest);
+                iv.setImageResource(R.drawable.priest5);
                 break;
             case "The Thief":
-                iv.setImageResource(R.drawable.thief);
+                iv.setImageResource(R.drawable.thief7);
                 break;
             default:
                 iv.setImageResource(R.drawable.cardback);

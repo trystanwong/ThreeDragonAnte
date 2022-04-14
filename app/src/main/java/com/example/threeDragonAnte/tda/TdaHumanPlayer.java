@@ -8,14 +8,9 @@ import static com.example.threeDragonAnte.tda.TdaGameState.DISCARD;
 import static com.example.threeDragonAnte.tda.TdaGameState.ROUND;
 
 import android.app.Activity;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.provider.MediaStore;
-import android.view.DragEvent;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,7 +22,6 @@ import android.widget.Toast;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import com.example.threeDragonAnte.R;
 import com.example.threeDragonAnte.game.GameHumanPlayer;
@@ -686,70 +680,250 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         hand[9] = activity.findViewById(R.id.hand0_9);
     }
 
-    public void setImage(ImageView iv, String name){
+    public void setImage(ImageView iv, String name, int strength){
 
         //all possible names of cards
         switch (name) {
-
             case "Silver Dragon":
-                iv.setImageResource(R.drawable.silverdragon);
+                iv.setImageResource(R.drawable.silverdragon6);
+                switch (strength) {
+                    case(1):
+                        iv.setImageResource(R.drawable.silverdragon2);
+                    case(2):
+                        iv.setImageResource(R.drawable.silverdragon3);
+                    case(3):
+                        iv.setImageResource(R.drawable.silverdragon6);
+                    case(4):
+                        iv.setImageResource(R.drawable.silverdragon8);
+                    case(5):
+                        iv.setImageResource(R.drawable.silverdragon10);
+                    case(6):
+                        iv.setImageResource(R.drawable.silverdragon12);
+            }
                 break;
             case "Copper Dragon":
                 iv.setImageResource(R.drawable.copperdragon1);
+                switch(strength){
+                    case(1):
+                        iv.setImageResource(R.drawable.copperdragon1);
+                    case(2):
+                        iv.setImageResource(R.drawable.copperdragon3);
+                    case(3):
+                        iv.setImageResource(R.drawable.copperdragon5);
+                    case(4):
+                        iv.setImageResource(R.drawable.copperdragon7);
+                    case(5):
+                        iv.setImageResource(R.drawable.copperdragon8);
+                    case(6):
+                        iv.setImageResource(R.drawable.copperdragon10);
+                }
                 break;
             case "Red Dragon":
                 iv.setImageResource(R.drawable.reddragon3);
+                switch(strength){
+                    case(1):
+                        iv.setImageResource(R.drawable.reddragon3);
+                    case(2):
+                        iv.setImageResource(R.drawable.copperdragon3);
+                    case(3):
+                        iv.setImageResource(R.drawable.copperdragon5);
+                    case(4):
+                        iv.setImageResource(R.drawable.copperdragon7);
+                    case(5):
+                        iv.setImageResource(R.drawable.copperdragon8);
+                    case(6):
+                        iv.setImageResource(R.drawable.copperdragon10);
+                }
                 break;
             case "Gold Dragon":
                 iv.setImageResource(R.drawable.golddragon6);
+                    switch(strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.golddragon2);
+                        case(2):
+                            iv.setImageResource(R.drawable.golddragon4);
+                        case(3):
+                            iv.setImageResource(R.drawable.golddragon6);
+                        case(4):
+                            iv.setImageResource(R.drawable.golddragon9);
+                        case(5):
+                            iv.setImageResource(R.drawable.golddragon11);
+                        case(6):
+                            iv.setImageResource(R.drawable.golddragon13);
+                    }
                 break;
             case "Brass Dragon":
                 iv.setImageResource(R.drawable.brassdragon9);
+                    switch (strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.brassdragon1);
+                        case(2):
+                            iv.setImageResource(R.drawable.brassdragon2);
+                        case(3):
+                            iv.setImageResource(R.drawable.brassdragon4);
+                        case(4):
+                            iv.setImageResource(R.drawable.brassdragon5);
+                        case(5):
+                            iv.setImageResource(R.drawable.brassdragon7);
+                        case(6):
+                            iv.setImageResource(R.drawable.brassdragon9);
+                    }
                 break;
             case "Black Dragon":
                 iv.setImageResource(R.drawable.blackdragon1);
+                    switch(strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.blackdragon1);
+                        case(2):
+                            iv.setImageResource(R.drawable.blackdragon2);
+                        case(3):
+                            iv.setImageResource(R.drawable.blackdragon3);
+                        case(4):
+                            iv.setImageResource(R.drawable.blackdragon5);
+                        case(5):
+                            iv.setImageResource(R.drawable.blackdragon7);
+                        case(6):
+                            iv.setImageResource(R.drawable.blackdragon9);
+                    }
                 break;
             case "Blue Dragon":
                 iv.setImageResource(R.drawable.bluedragon1);
+                    switch(strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.bluedragon1);
+                        case(2):
+                            iv.setImageResource(R.drawable.bluedragon2);
+                        case(3):
+                            iv.setImageResource(R.drawable.bluedragon4);
+                        case(4):
+                            iv.setImageResource(R.drawable.bluedragon7);
+                        case(5):
+                            iv.setImageResource(R.drawable.bluedragon9);
+                        case(6):
+                            iv.setImageResource(R.drawable.bluedragon11);
+                    }
                 break;
             case "Bronze Dragon":
                 iv.setImageResource(R.drawable.bronzedragon1);
+                    switch(strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.bronzedragon1);
+                        case(2):
+                            iv.setImageResource(R.drawable.bronzedragon3);
+                        case(3):
+                            iv.setImageResource(R.drawable.bronzedragon6);
+                        case(4):
+                            iv.setImageResource(R.drawable.bronzedragon7);
+                        case(5):
+                            iv.setImageResource(R.drawable.bronzedragon9);
+                        case(6):
+                            iv.setImageResource(R.drawable.bronzedragon11);
+                    }
                 break;
             case "White Dragon":
-                iv.setImageResource(R.drawable.whitedragon);
+                iv.setImageResource(R.drawable.whitedragon1);
+                    switch (strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.whitedragon1);
+                        case(2):
+                            iv.setImageResource(R.drawable.whitedragon2);
+                        case(3):
+                            iv.setImageResource(R.drawable.whitedragon3);
+                        case(4):
+                            iv.setImageResource(R.drawable.whitedragon4);
+                        case(5):
+                            iv.setImageResource(R.drawable.whitedragon6);
+                        case(6):
+                            iv.setImageResource(R.drawable.whitedragon8);
+                    }
                 break;
             case "Green Dragon":
-                iv.setImageResource(R.drawable.greendragon);
+                iv.setImageResource(R.drawable.greendragon8);
+                    switch(strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.greendragon1);
+                        case(2):
+                            iv.setImageResource(R.drawable.greendragon2);
+                        case(3):
+                            iv.setImageResource(R.drawable.greendragon4);
+                        case(4):
+                            iv.setImageResource(R.drawable.greendragon6);
+                        case(5):
+                            iv.setImageResource(R.drawable.greendragon8);
+                        case(6):
+                            iv.setImageResource(R.drawable.greendragon10);
+
+                    }
                 break;
             case "Bahamut":
-                iv.setImageResource(R.drawable.bahamut);
+                iv.setImageResource(R.drawable.bahamut13);
+                    switch(strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.bahamut13);
+                    }
                 break;
             case "Dracolich":
-                iv.setImageResource(R.drawable.dracolich);
+                iv.setImageResource(R.drawable.dracolich10);
+                    switch (strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.dracolich10);
+                    }
                 break;
             case "Tiamat":
-                iv.setImageResource(R.drawable.tiamat);
+                iv.setImageResource(R.drawable.tiamat13);
+                    switch(strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.tiamat13);
+                    }
                 break;
             case "The Princess":
-                iv.setImageResource(R.drawable.princess);
+                iv.setImageResource(R.drawable.princess4);
+                    switch(strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.princess4);
+                    }
                 break;
             case "The Fool":
-                iv.setImageResource(R.drawable.fool);
+                iv.setImageResource(R.drawable.fool3);
+                    switch (strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.fool3);
+            }
                 break;
             case "The Druid":
-                iv.setImageResource(R.drawable.druid);
+                iv.setImageResource(R.drawable.druid6);
+                    switch (strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.druid6);
+                    }
                 break;
             case "The Archmage":
-                iv.setImageResource(R.drawable.hermit);
+                iv.setImageResource(R.drawable.hermit9);
+                    switch (strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.hermit9);
+                    }
                 break;
             case "The DragonSlayer":
-                iv.setImageResource(R.drawable.dragonslayer);
+                iv.setImageResource(R.drawable.dragonslayer8);
+                    switch (strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.dragonslayer8);
+                    }
                 break;
             case "The Priest":
-                iv.setImageResource(R.drawable.priest);
+                iv.setImageResource(R.drawable.priest5);
+                    switch (strength){
+                        case(1):
+                            iv.setImageResource(R.drawable.priest5);
+                    }
                 break;
             case "The Thief":
-                iv.setImageResource(R.drawable.thief);
+                iv.setImageResource(R.drawable.thief7);
+                switch (strength){
+                    case(1):
+                        iv.setImageResource(R.drawable.thief7);
+                }
                 break;
             default:
                 iv.setImageResource(R.drawable.cardback);
@@ -757,6 +931,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
         }
     }
+
+
 
     public void cardOrientation(){
 
