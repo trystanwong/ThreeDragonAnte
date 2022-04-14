@@ -931,14 +931,14 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         MediaPlayer sound = new MediaPlayer();
         switch(name){
             case "Dracolich":
-                //sound = MediaPlayer.create(myActivity,R.raw.dracolich);
+                sound = MediaPlayer.create(myActivity,R.raw.dracolich);
                 break;
             case "Red Dragon":
                 sound = MediaPlayer.create(myActivity,R.raw.redroar);
                 break;
-            case "Copper Dragon":
+            //case "Copper Dragon":
                 //sound = MediaPlayer.create(myActivity,R.raw.copper);
-                break;
+                //break;
             case "Black Dragon":
                 sound = MediaPlayer.create(myActivity,R.raw.dracolich);
                 break;
