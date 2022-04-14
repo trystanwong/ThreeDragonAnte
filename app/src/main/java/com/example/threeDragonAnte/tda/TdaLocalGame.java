@@ -85,6 +85,9 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                 hand.remove(index);
                 tda.setDiscarding(false);
                 tda.setPhase(TdaGameState.ROUND);
+                for (Card c : hand) {
+                    c.setPlayable(false);
+                }
                 return turnHelper();
             }
             else {
@@ -153,6 +156,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
         //a player is making a choice
         else if(action instanceof ChoiceAction){
             int choice = ((ChoiceAction) action).getChoiceNum();
+
             //if the opponent gave you a choice
             if(!tda.isChoosing()) {
                 String name = tda.getLast()[opponent].getName();
@@ -179,11 +183,6 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                             }
                             else {
                                 tda.setGameText("No weaker dragons to give");
-                                if(super.players[player] instanceof TdaComputerPlayer){
-                                    tda.setHoard(opponent, 5);
-                                    tda.setHoard(player, -5);
-                                    tda.setPhase(TdaGameState.ROUND);
-                                }
                             }
                             return true;
                         }
@@ -239,6 +238,20 @@ public class TdaLocalGame extends LocalGame implements Serializable {
             else if(tda.isChoosing()) {
                 switch (tda.getLast()[player].getName()) {
 
+                    case "The Princess":
+                        switch(playerFlight.get(choice).getName()){
+                            case "Brass Dragon":
+                                tda.setChoosing(false);
+                                tda.getLast()[player].setName("Brass Dragon");
+                                return brassDragon();
+                            default:
+                                powers(playerFlight.get(choice).getName());
+                                break;
+                        }
+                        tda.setPhase(TdaGameState.ROUND);
+                        tda.setChooseFrom(0);
+                        break;
+
                     case "The Archmage":
                         tda.setLast(player,tda.getAnte().get(choice));
                         tda.setChoosing(false);
@@ -256,6 +269,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         }
                         if (choice == 0) {
                             tda.setHoard(player, num);
+                            tda.setStakes(stakes - num);
                             tda.setPhase(TdaGameState.ROUND);
                         }
                         if (choice == 1) {
@@ -276,8 +290,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                                 break;
                             case "Green Dragon":
                                 tda.getLast()[player].setName("Green Dragon");
-                                greenDragon();
-                                return true;
+                                return greenDragon();
                             default:
                                 powers(tda.getFlights()[opponent].get(choice).getName());
                                 break;
@@ -304,6 +317,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         break;
 
                     case "Blue Dragon":
+                        //checking for the amount of blue dragons in the hand
                         int numEvil = 0;
                         for (Card check : tda.getFlights()[player]) {
                             if (check.getType() == Card.EVIL) {
@@ -312,6 +326,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         }
                         if (choice == 0) {
                             tda.setHoard(player, numEvil);
+                            tda.setStakes(stakes-numEvil);
                             tda.setPhase(TdaGameState.ROUND);
                         }
                         if (choice == 1) {
@@ -320,6 +335,8 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                             tda.setPhase(TdaGameState.ROUND);
                         }
                         tda.setChooseFrom(0);
+                        tda.setChoosing(false);
+                        tda.setDiscarding(false);
                         break;
                 }
                 tda.setChoosing(false);
@@ -379,6 +396,26 @@ public class TdaLocalGame extends LocalGame implements Serializable {
 
                 //cards that have choices
                 switch(flight.getName()){
+                    case "The Princess":
+                        tda.setGameText("Choose which power to activate first: ");
+                        for(int i = 0; i < playerFlight.size();i++){
+                            Card p = playerFlight.get(i);
+                            //only discards cards that are dragons
+                            // and weaker than the dragon slayer
+                            if(p.getType()==Card.GOOD){
+                                tda.addChooseFrom();
+                                tda.setChoices(tda.getChooseFrom()-1,
+                                        (i+1)+". "+playerFlight.get(i).toString());
+                            }
+                        }
+                        if(tda.getChooseFrom()==0){
+                            break;
+                        }
+                        else {
+                            tda.setPhase(TdaGameState.CHOICE);
+                            tda.setChoosing(true);
+                            return true;
+                        }
                     case "Dracolich":
                         tda.setGameText("Choose a card to copy its power:");
                         //looking through the opponents flight to see what cards you can copy
@@ -434,7 +471,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         else {
                             //steal 7 g from the stakes
                             tda.setHoard(player, +7);
-                            tda.setStakes(stakes + 7);
+                            tda.setStakes(stakes - 7);
                             for (Card h : hand) {
                                 h.setPlayable(true);
                             }
@@ -611,7 +648,6 @@ public class TdaLocalGame extends LocalGame implements Serializable {
 
         //used for where the top card of the deck went in the hand
         int size = tda.getHands()[player].size();
-
         if(size>1){
             tda.drawCard(player);
         }
@@ -773,24 +809,62 @@ public class TdaLocalGame extends LocalGame implements Serializable {
         Random rand = new Random();
         int player = tda.getCurrentPlayer(); //current player
         int opponent = Math.abs(player-1); //opponent of the current player
-        int playerHoard = tda.getHoards()[player]; //current hoard of the player
-        int opponentHoard = tda.getHoards()[opponent]; //current hoard of the opponent
         int stakes = tda.getStakes(); //current stakes of the gambit
         ArrayList<Card> playerFlight = tda.getFlights()[player]; //current players flight
         ArrayList<Card> oppFlight = tda.getFlights()[opponent];//opponent of the current players flighta
 
         //power based on name
         switch(name){
+            case "The Fool":
+                //if the opponent has a stronger flight draw a card
+                //and pay 1 to the stakes
+                if(strongestFlight()!=player){
+                    tda.setHoard(player,-1);
+                    tda.drawCard(player);
+                }
+                break;
             case "Black Dragon":
+                //steal 2 gold from the stakes
                 tda.setHoard(player,2);
                 tda.setStakes(stakes-2);
                 break;
             case "The Priest":
+                //pay 1 to the stakes, you will automatically win the round
                 tda.setHoard(player,-1);
                 tda.setStakes(stakes+1);
                 break;
             case "Gold Dragon":
-
+                //counter for amount of good dragons
+                int numGoodDragons = 0;
+                //check current players flight to see how many good dragons are within flight
+                for (Card e: playerFlight) {
+                    if (e.getType() == Card.GOOD) {
+                        numGoodDragons++;
+                    }
+                }
+                //go through a for loop to draw a card for each good dragon
+                for (int i = 0; i < numGoodDragons; i++) {
+                    tda.drawCard(player);
+                }
+                break;
+            case "Copper Dragon":
+                //find where the copper dragon has been placed
+                for (Card d: playerFlight) {
+                    //if the card is a copper dragon than remove the card from the flight
+                    if (d.getName().equals("Copper Dragon")) {
+                        playerFlight.remove(d);
+                    }
+                }
+                //get the card from the deck
+                int index = rand.nextInt(tda.getDeck().size());
+                Card c = tda.getDeck().get(index);
+                //remove the card from the deck
+                tda.getDeck().remove(index);
+                c.setPlacement(Card.FLIGHT);
+                //add the card to the flight and activate the power
+                playerFlight.add(c);
+                this.powers(c.getName());
+                break;
             case "Red Dragon":
                 //random card from opponents hand
                 int indexOfCard = rand.nextInt(tda.getHands()[opponent].size());
