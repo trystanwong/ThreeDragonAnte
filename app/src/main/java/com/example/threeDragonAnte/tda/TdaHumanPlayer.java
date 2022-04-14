@@ -58,6 +58,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private MediaPlayer backgroundMusic;
     private MediaPlayer confirm;
 
+
     //text on the board
     private TextView gameText;
     private TextView opponentName;
@@ -614,7 +615,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
         //sounds during the game
         dragonRoar = MediaPlayer.create(myActivity,R.raw.roar);
-        backgroundMusic = MediaPlayer.create(myActivity,R.raw.backgroundmusic);
+        backgroundMusic = MediaPlayer.create(myActivity,R.raw.backgroundmusic1);
         confirm = MediaPlayer.create(myActivity,R.raw.confirm1);
 
         // Load the layout resource for our GUI
