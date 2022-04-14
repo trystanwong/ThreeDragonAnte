@@ -10,6 +10,7 @@ import static com.example.threeDragonAnte.tda.TdaGameState.ROUND;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.view.DragEvent;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -77,6 +78,9 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
     private TextView strength1;
     private TextView strength2;
 
+    //sounds
+    private MediaPlayer drawCard;
+
 
     /**
      * constructor
@@ -142,6 +146,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         if (!gameInfo) {
             super.flash(Color.RED, 100);
         } else {
+
 
             //current state of the game
             tda = (TdaGameState) info;
@@ -386,6 +391,9 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
                     case MotionEvent.ACTION_UP:
 
+                        //when card is released sound is played
+                        drawCard.start();
+
                         //zoomed image becomes invisible
                         zoomed.setVisibility(View.INVISIBLE);
 
@@ -505,6 +513,8 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
         // remember the activity
         myActivity = activity;
         mainLayout = (RelativeLayout)activity.findViewById(R.id.topHalf);
+
+        drawCard = MediaPlayer.create(myActivity,R.raw.drawcard);
 
         // Load the layout resource for our GUI
         activity.setContentView(R.layout.tda_main);
