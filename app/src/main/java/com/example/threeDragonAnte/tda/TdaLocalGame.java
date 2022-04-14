@@ -520,6 +520,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         c.setPlacement(Card.HAND);
                         tda.getHands()[player].add(c);
                         int size = tda.getHands()[player].size();
+                        tda.setMoves(tda.getMoves()-1);
                         //add the card to the flight and activate the power
                         sendAction(new PlayCardAction(players[player],size-1,Card.FLIGHT));
                         return true;
@@ -536,7 +537,6 @@ public class TdaLocalGame extends LocalGame implements Serializable {
      * used for the dracolich
      */
     public boolean greenDragon(){
-
         int opponent = Math.abs(tda.getCurrentPlayer()-1);
         int player = tda.getCurrentPlayer();
         ArrayList<Card> oppHand = tda.getHands()[opponent];
@@ -836,7 +836,6 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                 }
             }
         }
-
         tda.setHoard(winner,tda.getStakes()); //winner of the gambit gets the stakes
         tda.setStakes(0); //clear the stakes
 
