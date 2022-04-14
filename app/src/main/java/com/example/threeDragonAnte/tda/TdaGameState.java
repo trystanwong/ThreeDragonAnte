@@ -77,6 +77,7 @@ public class TdaGameState extends GameState {
         }
 
         lastPlayed = new Card(); //no card played yet at the beginning of the game
+        //midGame = false; //not currently in the middle of a game
 
         //no cards selected at the beginning of the game
         last = new Card[2];
@@ -190,7 +191,7 @@ public class TdaGameState extends GameState {
         //554676 - arch mage
         //854 - fool
         //765 - princess
-        Random r = new Random(765);
+        Random r = new Random();
         int index = r.nextInt(deck.size());
         Card drawn = deck.get(index);
         deck.remove(index);
