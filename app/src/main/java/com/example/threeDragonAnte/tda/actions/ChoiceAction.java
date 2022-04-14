@@ -4,6 +4,7 @@ import com.example.threeDragonAnte.game.GamePlayer;
 import com.example.threeDragonAnte.game.actionMsg.GameAction;
 
 public class ChoiceAction extends GameAction {
+    private static final long serialVersionUID = -1110916892027578792L;
     private int choiceNum;
     /**
      * constructor for GameAction

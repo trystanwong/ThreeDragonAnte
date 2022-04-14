@@ -1,5 +1,6 @@
 package com.example.threeDragonAnte.tda;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -12,8 +13,8 @@ import java.util.ArrayList;
  * @author Mohammad Surur
  * @author Marcus Rison
  */
-public class Card {
-
+public class Card implements Serializable {
+    private static final long serialVersionUID = -4269730007792L;
     //instance variables
 
     private String name;//name of the card

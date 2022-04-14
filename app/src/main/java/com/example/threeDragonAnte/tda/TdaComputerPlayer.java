@@ -4,6 +4,7 @@ import com.example.threeDragonAnte.game.GameComputerPlayer;
 import com.example.threeDragonAnte.game.GamePlayer;
 import com.example.threeDragonAnte.game.infoMsg.GameInfo;
 import com.example.threeDragonAnte.tda.actions.ChoiceAction;
+import com.example.threeDragonAnte.tda.actions.DiscardCardAction;
 import com.example.threeDragonAnte.tda.actions.PlayCardAction;
 
 public class TdaComputerPlayer extends GameComputerPlayer {
@@ -48,7 +49,18 @@ public class TdaComputerPlayer extends GameComputerPlayer {
 
                         //dumb A.I always takes option 1
                     case TdaGameState.CHOICE:
-                        super.game.sendAction(new ChoiceAction(this,1));
+                        super.game.sendAction(new ChoiceAction(this,0));
+                        break;
+                    case TdaGameState.DISCARD:
+                        //dumb A.I chooses the first playable card to discard
+                        int index = 0;
+                        for(int i = 0; i < tda.getHands()[playerNum].size();i++){
+                            if(tda.getHands()[playerNum].get(i).isPlayable()){
+                                index = i;
+                                break;
+                            }
+                        }
+                        super.game.sendAction(new DiscardCardAction(this,index));
                         break;
                     default:
                         break;

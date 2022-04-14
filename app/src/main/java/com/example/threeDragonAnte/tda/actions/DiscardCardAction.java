@@ -5,6 +5,7 @@ import com.example.threeDragonAnte.game.actionMsg.GameAction;
 import com.example.threeDragonAnte.tda.Card;
 
 public class DiscardCardAction extends GameAction {
+    private static final long serialVersionUID = -74442128792L;
     private int discard;
     /**
      * constructor for GameAction
