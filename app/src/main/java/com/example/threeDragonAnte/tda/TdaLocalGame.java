@@ -63,6 +63,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
         ArrayList<Card> playerFlight = tda.getFlights()[player];
         ArrayList<Card> antePile = tda.getAnte();
 
+        //if the player tries to buy a card
         if(action instanceof BuyCardAction){
             if(hand.size()>=10){
                 return false;
@@ -93,7 +94,9 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                 return turnHelper();
             }
             else {
+                //name of the card the opponent just played
                 String name = tda.getLast()[opponent].getName();
+
                 //if a green dragon or tiamat were played by the opponent
                 if(name.equals("Green Dragon")||name.equals("Tiamat")){
                     if (hand.get(index).getStrength() >= tda.getLast()[opponent].getStrength()) {
@@ -121,8 +124,10 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                     if (hand.get(index).getStrength() <= tda.getLast()[opponent].getStrength()) {
                         return false;
                     } else {
-                        Card discarded = hand.get(index);
+                        Card discarded = hand.get(index);//card being discarded
                         discarded.setPlayable(false);
+
+                        //adding the card to the opponents hand
                         tda.getHands()[opponent].add(discarded);
                         hand.remove(index);
                         tda.setDiscarding(false);
@@ -323,6 +328,8 @@ public class TdaLocalGame extends LocalGame implements Serializable {
             }
             return turnHelper();
         }
+
+        //user tries to play a card (add it to the flight)
         if(action instanceof PlayCardAction){
 
             //if the played card is going to an ante
@@ -402,8 +409,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         //looking through the opponents flight to see what cards you can copy
                         for(int i = 0; i < opFlight.size();i++){
                             Card d = opFlight.get(i);
-                            //only discards cards that are dragons
-                            // and weaker than the dragon slayer
+                            //only copies cards that are evil
                             if(d.getType()==Card.EVIL){
                                 tda.addChooseFrom();
                                 tda.setChoices(tda.getChooseFrom()-1,

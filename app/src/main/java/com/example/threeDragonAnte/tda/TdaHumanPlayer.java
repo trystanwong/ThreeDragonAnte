@@ -106,6 +106,7 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
 
         boolean gameInfo = info instanceof TdaGameState;
 
+        //illegal move flashes the screen red
         if (!gameInfo) {
             super.flash(Color.RED, 100);
         } else {
@@ -114,19 +115,18 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
             tda = (TdaGameState) info;
 
             switch(tda.getPhase()){
-                case ANTE:
-                    //telling the user what to do in an ante
+                case ANTE: //telling the user what to do in an ante
                     gameText.setText("Move a card from your hand to your ante.");
 
                     choice1.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     choice3.setVisibility(View.GONE);
                     break;
-                case ROUND:
-                    //telling the user what to do in a round
+                case ROUND: //telling the user what to do in a round
                     choice1.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     choice3.setVisibility(View.GONE);
+                    //user should know what to do if the round has started already
                      if(tda.getRound()>0){
                         gameText.setText("Your turn.");
                      }
@@ -135,8 +135,9 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                      }
                     break;
 
-                case CHOICE:
-                    //if a choice is presented to the player
+                case CHOICE: //if a choice is presented to the player
+
+                    //only visible to the player making the choice
                     if(tda.getCurrentPlayer()==playerNum){
 
                         //text of what choice the player has to make
@@ -185,10 +186,12 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     choice3.setVisibility(View.GONE);
                     break;
 
-                case TdaGameState.CONFIRM:
-                    //when a player needs to confirm a change in the game
+                case TdaGameState.CONFIRM: //user needs to confirm game data info
+
+                    //what the user is confirming
                     gameText.setText(tda.getGameText());
                     choice1.setText(tda.getChoice1());
+
                     //only visible to the player who is confirming
                     if(tda.getCurrentPlayer()==playerNum){
                         choice1.setVisibility(View.VISIBLE);
