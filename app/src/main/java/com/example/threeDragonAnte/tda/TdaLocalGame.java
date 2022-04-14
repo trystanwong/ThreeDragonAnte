@@ -509,7 +509,9 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                     case "Green Dragon":
                         return greenDragon();
                     case "Brass Dragon":
-                        return brassDragon();
+                        //if the strongest flight is the opponent than activate the brass dragons power
+                        if(strongestFlight() == opponent) { return brassDragon(); }
+                        break;
                 }
                 return turnHelper();
             }
