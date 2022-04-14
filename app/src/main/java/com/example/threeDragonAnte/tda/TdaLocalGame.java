@@ -178,7 +178,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                     case "Tiamat":
                     case "Green Dragon":
                         //only give them the option if they have cards that they can play
-                        if(tda.getChooseFrom()==2&&choice==0){
+                        if(tda.getChooseFrom()==2){
                             tda.setChooseFrom(0);
                             tda.setChoosing(false);
                             tda.setGameText("Choose a dragon from your hand with" +
@@ -199,7 +199,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         }
                         break;
                     case "Brass Dragon":
-                        if (tda.getChooseFrom()==2&&choice==0) {
+                        if (tda.getChooseFrom()==2||choice==0) {
                             tda.setChooseFrom(0);
                             tda.setChoosing(false);
                             tda.setGameText("Choose a dragon from your hand with" +
@@ -237,7 +237,6 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         tda.setPhase(TdaGameState.ROUND);
                         tda.setChooseFrom(0);
                         break;
-
                     case "The Archmage":
                         tda.setLast(player,tda.getAnte().get(choice));
                         tda.setChoosing(false);
@@ -500,7 +499,31 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                     case "Green Dragon":
                         return greenDragon();
                     case "Brass Dragon":
-                        return brassDragon();
+                        if(strongestFlight()==opponent) {
+                            return brassDragon();
+                        }
+                        break;
+                    case "Copper Dragon":
+                        Random rand = new Random();
+                        //find where the copper dragon has been placed
+                        for (Card d: playerFlight) {
+                            //if the card is a copper dragon than remove the card from the flight
+                            if (d.getName().equals("Copper Dragon")) {
+                                playerFlight.remove(d);
+                            }
+                        }
+                        //get the card from the deck
+                        int i = rand.nextInt(tda.getDeck().size());
+                        Card c = tda.getDeck().get(i);
+                        //remove the card from the deck
+                        tda.getDeck().remove(i);
+                        c.setPlacement(Card.HAND);
+                        tda.getHands()[player].add(c);
+                        int size = tda.getHands()[player].size();
+                        //add the card to the flight and activate the power
+                        sendAction(new PlayCardAction(players[player],size-1,Card.FLIGHT));
+                        return true;
+
                 }
                 return turnHelper();
             }
@@ -892,24 +915,6 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                 for (int i = 0; i < numGoodDragons; i++) {
                     tda.drawCard(player);
                 }
-                break;
-            case "Copper Dragon":
-                //find where the copper dragon has been placed
-                for (Card d: playerFlight) {
-                    //if the card is a copper dragon than remove the card from the flight
-                    if (d.getName().equals("Copper Dragon")) {
-                        playerFlight.remove(d);
-                    }
-                }
-                //get the card from the deck
-                int index = rand.nextInt(tda.getDeck().size());
-                Card c = tda.getDeck().get(index);
-                //remove the card from the deck
-                tda.getDeck().remove(index);
-                c.setPlacement(Card.FLIGHT);
-                //add the card to the flight and activate the power
-                playerFlight.add(c);
-                this.powers(c.getName());
                 break;
             case "Red Dragon":
                 //random card from opponents hand

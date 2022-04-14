@@ -199,7 +199,6 @@ public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListe
                     choice3.setVisibility(View.GONE);
                     choice2.setVisibility(View.GONE);
                     break;
-
             }
             //if its not the player's turn the computer is making a decision
             if(tda.getCurrentPlayer()!=playerNum&&tda.getPhase()!=CONFIRM){
