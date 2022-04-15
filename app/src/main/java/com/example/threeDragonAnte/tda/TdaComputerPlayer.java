@@ -6,7 +6,14 @@ import com.example.threeDragonAnte.game.infoMsg.GameInfo;
 import com.example.threeDragonAnte.tda.actions.ChoiceAction;
 import com.example.threeDragonAnte.tda.actions.DiscardCardAction;
 import com.example.threeDragonAnte.tda.actions.PlayCardAction;
-
+/**
+ * Represents a dumb AI to be an opponent for the human player
+ *
+ * @author Trystan Wong
+ * @author Kawika Suzuki
+ * @author Mohammad Surur
+ * @author Marcus Rison
+ */
 public class TdaComputerPlayer extends GameComputerPlayer {
 
     private TdaGameState tda;

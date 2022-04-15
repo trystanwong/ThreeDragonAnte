@@ -16,6 +16,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ *
+ * Local Game of TDA
+ *
+ * @author Trystan Wong
+ * @author Kawika Suzuki
+ * @author Mohammad Surur
+ * @author Marcus Rison
+ */
 public class TdaLocalGame extends LocalGame implements Serializable {
 
     private TdaGameState tda;
@@ -199,7 +208,7 @@ public class TdaLocalGame extends LocalGame implements Serializable {
                         }
                         break;
                     case "Brass Dragon":
-                        if (tda.getChooseFrom()==2||choice==0) {
+                        if (tda.getChooseFrom()==2) {
                             tda.setChooseFrom(0);
                             tda.setChoosing(false);
                             tda.setGameText("Choose a dragon from your hand with" +
@@ -223,7 +232,6 @@ public class TdaLocalGame extends LocalGame implements Serializable {
             //if you played a card that gave you a choice
             else if(tda.isChoosing()) {
                 switch (tda.getLast()[player].getName()) {
-
                     case "The Princess":
                         switch(playerFlight.get(choice).getName()){
                             case "Brass Dragon":

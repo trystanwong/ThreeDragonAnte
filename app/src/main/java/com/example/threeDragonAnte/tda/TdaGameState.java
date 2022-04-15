@@ -3,7 +3,14 @@ package com.example.threeDragonAnte.tda;
 import com.example.threeDragonAnte.game.infoMsg.GameState;
 import java.util.ArrayList;
 import java.util.Random;
-
+/**
+ * GameState Class keeps track of the current state of the TDA game
+ *
+ * @author Trystan Wong
+ * @author Kawika Suzuki
+ * @author Mohammad Surur
+ * @author Marcus Rison
+ */
 public class TdaGameState extends GameState {
 
     private static final long serialVersionUID = -720211997L;

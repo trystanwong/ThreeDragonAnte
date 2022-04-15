@@ -14,6 +14,9 @@ import com.example.threeDragonAnte.game.config.GamePlayerType;
 
 import java.util.ArrayList;
 
+/**
+ * TDA main activity class
+ */
 public class TdaMainActivity extends GameMainActivity {
     private static final int PORT_NUMBER = 2278;
 

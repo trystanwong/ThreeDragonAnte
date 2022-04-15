@@ -153,7 +153,6 @@ public class Card implements Serializable {
         deck.add(new Card("Copper Dragon", 8, GOOD));
         deck.add(new Card("Copper Dragon", 10, GOOD));
 
-
         //All Mortals
         deck.add(new Card("The Fool",3,MORTAL));
         deck.add(new Card("The Princess",4,MORTAL));
