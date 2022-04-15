@@ -227,9 +227,11 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
                                 //if the computers hoard is less than 30 than do the first choice of action
                                 if (computerHoard < 30) {
                                     super.game.sendAction(new ChoiceAction(this, 1));
+                                    break;
                                 //if not than do the second choice of action
                                 } else {
                                     super.game.sendAction(new ChoiceAction(this, 2));
+                                    break;
                                 }
                             }
                         }
@@ -240,9 +242,11 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
                                 //
                                 if (computerHoard < 30) {
                                     super.game.sendAction(new ChoiceAction(this, 1));
+                                    break;
                                 }
                                 else {
                                     super.game.sendAction(new ChoiceAction(this, 2));
+                                    break;
                                 }
                             }
                         }
@@ -254,9 +258,11 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
                                 //
                                 if (computerHoard < 30) {
                                     super.game.sendAction(new ChoiceAction(this, 1));
+                                    break;
                                 }
                                 else {
                                     super.game.sendAction(new ChoiceAction(this, 2));
+                                    break;
                                 }
                             }
                         }
