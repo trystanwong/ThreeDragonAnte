@@ -16,6 +16,18 @@ import java.util.ArrayList;
 
 /**
  * TDA main activity class
+ *
+ * The game only works with two players and the orientation of the game is fixed to portrait
+ * BUG: Archmage power doesn't properly copy certain powers. (crashes game)
+ * The smart and dumb A.I is implemented into the game framework
+ * Network play works effectively.
+ * No forfeit button on GUI anymore game only ends when win condition happens (0 gold)
+ * All other GUI features work even on Network play (switches for local player)
+ *
+ * @author Trystan Wong
+ * @author Kawika Suzuki
+ * @author Mohammad Surur
+ * @author Marcus Rison
  */
 public class TdaMainActivity extends GameMainActivity {
     private static final int PORT_NUMBER = 2278;

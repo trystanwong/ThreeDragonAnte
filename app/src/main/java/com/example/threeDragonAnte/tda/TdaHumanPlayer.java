@@ -42,7 +42,10 @@ import com.example.threeDragonAnte.tda.actions.PlayCardAction;
 /**
  * GUI for a Human Player playing TDA
  *
- * Author:
+ * @author Trystan Wong
+ *  * @author Kawika Suzuki
+ *  * @author Mohammad Surur
+ *  * @author Marcus Rison
  */
 public class TdaHumanPlayer extends GameHumanPlayer implements View.OnTouchListener, View.OnClickListener{
 

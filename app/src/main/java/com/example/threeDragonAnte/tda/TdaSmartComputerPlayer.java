@@ -9,6 +9,13 @@ import com.example.threeDragonAnte.tda.actions.PlayCardAction;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ *
+ * @author Trystan Wong
+ *  * @author Kawika Suzuki
+ *  * @author Mohammad Surur
+ *  * @author Marcus Rison
+ */
 public class TdaSmartComputerPlayer extends GameComputerPlayer {
 
     private TdaGameState tda;
