@@ -3,6 +3,7 @@ package com.example.threeDragonAnte.tda;
 import com.example.threeDragonAnte.game.GameComputerPlayer;
 import com.example.threeDragonAnte.game.infoMsg.GameInfo;
 import com.example.threeDragonAnte.tda.actions.ChoiceAction;
+import com.example.threeDragonAnte.tda.actions.DiscardCardAction;
 import com.example.threeDragonAnte.tda.actions.PlayCardAction;
 
 import java.util.ArrayList;
@@ -11,7 +12,6 @@ import java.util.Random;
 public class TdaSmartComputerPlayer extends GameComputerPlayer {
 
     private TdaGameState tda;
-    private ArrayList<PlayCardAction> viableMoves = new ArrayList<>();
     private Random rand = new Random();
     private int computer; //current player
     private int opponent; //opponent of the current player
@@ -23,6 +23,7 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
     private ArrayList<Card> oppHand; //gets the hand of the opponent
     private int oppStrength; //strength of opponent
     private int compStrength; //strength of computer
+    private ArrayList<PlayCardAction> viableMoves; //An arraylist of the possible smart moves an A.I can take
 
     /**
      * Smart A.I
@@ -46,7 +47,6 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
                 super.sleep(1000);
 
                 //variables to be used
-                Random rand = new Random();
                 this.computer = playerNum; //current player
                 this.opponent = Math.abs(computer-1); //opponent of the current player
                 this.computerHoard = tda.getHoards()[computer]; //current hoard of the player
@@ -57,6 +57,8 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
                 this.oppHand = tda.getHands()[opponent]; //gets the hand of the opponent
                 this.oppStrength = 0; //strength of opponent
                 this.compStrength = 0; //strength of computer
+                this.viableMoves = new ArrayList<>();
+
 
                 //different decisions based on the phase of the game
                 switch (tda.getPhase()) {
@@ -79,6 +81,11 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
 
                         //smart A.I plays a card based on it's situation
                     case TdaGameState.ROUND:
+
+                        //default viable move is place first card in hand
+                        PlayCardAction pcaDefault = new PlayCardAction(this, 0, Card.FLIGHT);
+                        viableMoves.add(pcaDefault);
+
                         //requirements to play a black dragon if the AI has 35 gold or less
                         if (computerHoard <= 30) {
                             if (hasCard("Black Dragon") != -1) {
@@ -181,13 +188,98 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
                             }
                         }
 
+                        //requirements for Tiamat is priority
+                        for (Card c: computerHand) {
+                            if (c.getName().equals("Tiamat")) {
+                                PlayCardAction pca12 = new PlayCardAction(this, computerHand.indexOf(c), Card.FLIGHT);
+                                viableMoves.add(pca12);
+                            }
+                        }
+
+                        //requirements for Bahamut is priority
+                        for (Card c: computerHand) {
+                            if (c.getName().equals("Bahamut")) {
+                                PlayCardAction pca13 = new PlayCardAction(this, computerHand.indexOf(c), Card.FLIGHT);
+                                viableMoves.add(pca13);
+                            }
+                        }
+
+                        //requirements for Dracolich is priority
+                        for (Card c: computerHand) {
+                            if (c.getName().equals("Dracolich")) {
+                                PlayCardAction pca14 = new PlayCardAction(this, computerHand.indexOf(c), Card.FLIGHT);
+                                viableMoves.add(pca14);
+                            }
+                        }
+
                         //create a random number generator to choose which of the smart moves to play at random
                         int choice = rand.nextInt(viableMoves.size());
                         super.game.sendAction(viableMoves.get(choice));
                         break;
                     //dumb A.I always takes option 1
                     case TdaGameState.CHOICE:
+                        //finds the card the opponent just played if it's an option card
+                        Card justPlayed = tda.getLast()[opponent];
+                        //if the card is a blue dragon
+                        if (justPlayed.getName().equals("Blue Dragon")) {
+                            //if there are 2 choices available
+                            if (tda.getChooseFrom() == 2) {
+                                //if the computers hoard is less than 30 than do the first choice of action
+                                if (computerHoard < 30) {
+                                    super.game.sendAction(new ChoiceAction(this, 1));
+                                    break;
+                                //if not than do the second choice of action
+                                } else {
+                                    super.game.sendAction(new ChoiceAction(this, 2));
+                                    break;
+                                }
+                            }
+                        }
+                        //if the card is a brass dragon
+                        if (justPlayed.getName().equals("Brass Dragon")) {
+                            //if there are 2 choices available
+                            if (tda.getChooseFrom() == 2) {
+                                //
+                                if (computerHoard < 30) {
+                                    super.game.sendAction(new ChoiceAction(this, 1));
+                                    break;
+                                }
+                                else {
+                                    super.game.sendAction(new ChoiceAction(this, 2));
+                                    break;
+                                }
+                            }
+                        }
+
+                        //if the card is a green dragon
+                        if (justPlayed.getName().equals("Green Dragon")) {
+                            //if there are 2 choices available
+                            if (tda.getChooseFrom() == 2) {
+                                //
+                                if (computerHoard < 30) {
+                                    super.game.sendAction(new ChoiceAction(this, 1));
+                                    break;
+                                }
+                                else {
+                                    super.game.sendAction(new ChoiceAction(this, 2));
+                                    break;
+                                }
+                            }
+                        }
+
+
                         super.game.sendAction(new ChoiceAction(this,1));
+                        break;
+                    case TdaGameState.DISCARD:
+                        //dumb A.I chooses the first playable card to discard
+                        int index = 0;
+                        for(int i = 0; i < tda.getHands()[playerNum].size();i++){
+                            if(tda.getHands()[playerNum].get(i).isPlayable()){
+                                index = i;
+                                break;
+                            }
+                        }
+                        super.game.sendAction(new DiscardCardAction(this,index));
                         break;
                     default:
                         break;
@@ -196,16 +288,23 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
         }
     }
 
+    /**
+     * returns the player with the strongest flight
+     * @return int of which player has the strongest being either 0 or 1
+     */
     public int strongestFlight() {
         int strongestPlayer = 0;
         int computerStrength = 0;
         int humanStrength = 0;
+        //check each card in the computers flight and add the strengths together
         for (Card c: computerFlight) {
             computerStrength += c.getStrength();
         }
+        //check each card in the opponents flight and add the strengths together
         for (Card d: oppFlight) {
             humanStrength += d.getStrength();
         }
+        //returns the player who has the strongest flight
         if (computerStrength >= humanStrength) {
             strongestPlayer = playerNum;
         }
@@ -215,6 +314,11 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
         return strongestPlayer;
     }
 
+    /**
+     * checks to see if the Card is in the computers hand
+     * @param name - name of passed in Card
+     * @return an int of the index of where the card is
+     */
     public int hasCard (String name) {
         int index = -1;
         for (int i = 0; i < computerHand.size(); i++) {
@@ -224,4 +328,5 @@ public class TdaSmartComputerPlayer extends GameComputerPlayer {
         }
         return index;
     }
+
 }
